@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Linked CSV Browser</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- DataTables CSS -->
+    <!--
+    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
+    -->
+    <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1>Linked CSV Browser</h1>
+      <div id="tables">
+      </div>
+    </div>
+    <!--
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    -->
+    <script src="js/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!-- DataTables -->
+    <!--
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+    -->
+    <script type="text/javascript" charset="utf8" src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="js/jquery.csv-0.71.js"></script>
+    <script type="text/javascript" src="js/jquery.uri.js"></script>
+    <script type="text/javascript" src="js/jquery.linked-csv.js"></script>
+    <script>
+      $(document).ready(function() {
+        var
+          linkCell = function (id) {
+            return $('<td><a class="btn btn-mini" href="' + id + '"><i class="icon-share"></i></a></td>');
+          },
+
+          tableValue = function (value, includeBadge) {
+            var v = value;
+            if ($.isArray(value)) {
+              v = '<div class="dropdown">';
+              v += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">' + tableValue(value[0], includeBadge) + '</a>';
+              v += '<ul class="dropdown-menu">';
+              $.each(value, function (index, value) {
+                v += '<li><a>' + tableValue(value, includeBadge) + '</a></li>';
+              });
+              v += '</ul>';
+              v += '</div>';
+              return v;
+            } else if (value['@id']) {
+              return '<a class="btn btn-mini" href="' + value['@id'] + '"><i class="icon-share"></i></a>';
+            } else if (value['@value']) {
+              v = value['@value'].replace(/\s+/, '&nbsp;');
+              if (includeBadge) {
+                v += '&nbsp;<span class="badge">' + value['@lang'] + '</span>';
+              }
+              return v;
+            } else {
+              return v.replace(/\s+/, '&nbsp;');
+            }
+          },
+
+          addRows = function($table, data) {
+            var $body = $table.find('tbody');
+            data.rows().each(function (index) {
+              var 
+                $idCell = linkCell(this['$id']),
+                $row = $('<tr></tr>').append($idCell).appendTo($body);
+              addCells($row, this, data);
+            });
+          },
+
+          addCells = function($row, row, data) {
+            data.headers().each(function (index) {
+              var value = '&nbsp;', ref;
+              if (this.property) {
+                value = row[this.header] || value;
+                if (this.see) {
+                  $.each(this.see, function (filename, data) {
+                    var entity = data.entity(value['@id']);
+                    addPropertyCells($row, entity, data);
+                  });
+                } else {
+                  $row.append('<td>' + tableValue(value) + '</td>');
+                }
+              }
+            });
+          },
+
+          addPropertyCells = function($row, entity, data) {
+            $.each(data.properties(), function (property, details) {
+              var value = '&nbsp;';
+              value = entity ? entity[property] || value : value;
+              $row.append('<td>' + tableValue(value, true) + '</td>');
+            });
+          },
+
+          addHeaders = function($table, filename, data) {
+            var
+              $filenameRow = $table.find('thead tr.filename'),
+              $propertyHeaderRow = $table.find('thead tr.property'),
+              $annotationHeaderRow = $table.find('thead tr.annotation');
+            data.headers().each(function (index) {
+              var
+                $lastFilename = $filenameRow.find('th:last'),
+                $lastProperty = $propertyHeaderRow.find('th:last');
+              if (this.property) {
+                if (this.see) {
+                  $.each(this.see, function (filename, data) {
+                    addPropertyHeaders($table, filename, data);
+                  });
+                } else {
+                  if ($lastFilename.text() === filename) {
+                    // increase the colspan
+                    $lastFilename.attr('colspan', parseInt($lastFilename.attr('colspan') || 1) + 1);
+                  } else {
+                    // add a new filename header cell
+                    $filenameRow.append('<th colspan="1">' + filename + '</th>');
+                  }
+                  if (this.lang || this.type) {
+                    if ($lastFilename.text() === filename && $lastProperty.text() === this.property) {
+                      $lastProperty.attr('colspan', parseInt($lastProperty.attr('colspan') || 1) + 1);
+                    } else {
+                      $propertyHeaderRow.append('<th colspan="1">' + this.property + '</th>');
+                    }
+                    $annotationHeaderRow.append('<th><span class="badge">' + (this.lang || this.type) + '</span></th>');
+                  } else {
+                    $propertyHeaderRow.append('<th rowspan="2">' + this.property + '</th>');
+                  }
+                }
+              }
+            });
+            return $table;
+          },
+
+          addPropertyHeaders = function($table, filename, data) {
+            var
+              $filenameRow = $table.find('thead tr.filename'),
+              $propertyHeaderRow = $table.find('thead tr.property'),
+              $annotationHeaderRow = $table.find('thead tr.annotation');
+            $.each(data.properties(), function (property, details) {
+              var
+                $lastFilename = $filenameRow.find('th:last'),
+                $lastProperty = $propertyHeaderRow.find('th:last');
+              if ($lastFilename.text() === filename) {
+                // increase the colspan
+                $lastFilename.attr('colspan', parseInt($lastFilename.attr('colspan') || 1) + 1);
+              } else {
+                // add a new filename header cell
+                $filenameRow.append('<th colspan="1">' + filename + '</th>');
+              }
+              $propertyHeaderRow.append('<th rowspan="2">' + property + '</th>');
+            });
+            return $table;
+          };
+
+        $.linkedCSV({
+          url: 'tests/european_unemployment1.0/countries.csv', 
+          base: $.uri.base(),
+          success: function(data) {
+            var $table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"><th colspan="1">countries.csv</th></tr><tr class="property"><th rowspan="2"></th></tr><tr class="annotation"></tr></thead><tbody></tbody></table>').appendTo($('#tables'));
+            addHeaders($table, 'countries.csv', data);
+            addRows($table, data);
+            /*
+            $table.dataTable({
+              bLengthChange: false,
+            });
+*/
+          }
+        });
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+#,$country,year^^date,population^^integer
+see,test3.csv,,
+,http://en.wikipedia.org/wiki/Afghanistan,1960,9616353
+,http://en.wikipedia.org/wiki/Afghanistan,1961,9799379
+,http://en.wikipedia.org/wiki/Afghanistan,1962,9989846
+,http://en.wikipedia.org/wiki/Afghanistan,1963,10188299
