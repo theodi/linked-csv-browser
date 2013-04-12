@@ -24,30 +24,21 @@
 
 			// process the header row
 			$.each(csv[0], function(header, value) {
-				var match, h = { header: header }, propertyArray = [];
-				if (header === '$id' || header === "#") {
-				} else if (match = header.match(urlHeaderRegex)) {
-					h.property = match[1];
-					h.type = 'url';
-				} else if (match = header.match(datatypeHeaderRegex)) {
-					h.property = match[1];
-					h.type = match[2];
-				} else if (match = header.match(langHeaderRegex)) {
-					h.property = match[1];
-					h.lang = match[2];
-				} else {
-					h.property = header;
-				}
-				headers.push(h);
-				headerIndex[header] = h;
-				if (h.property) {
-					if (propertyIndex[h.property] === undefined) {
-						propertyArray.push(h);
-						propertyIndex[h.property] = propertyArray;
-						properties.push(propertyArray);
-					} else {
-						propertyArray = propertyIndex[h.property];
-						propertyArray.push(h);						
+				var match, h = { name: header }, propertyArray = [];
+				if (header !== '#') {
+					if (header !== '$id') {
+						h['@id'] = $.uri.resolve('#' + header, base).toString()
+					}
+					headers.push(h);
+					headerIndex[header] = h;
+					if (header !== '$id') {
+						if (propertyIndex[h['@id']] === undefined) {
+							propertyArray.push(h);
+							propertyIndex[h['@id']] = propertyArray;
+						} else {
+							propertyArray = propertyIndex[h['@id']];
+							propertyArray.push(h);						
+						}
 					}
 				}
 				return true;
@@ -60,8 +51,40 @@
 					r = id === null ? {} : {'$id': id.toString()},
 					meta = row['#'];
 				$.each(row, function (header, value) {
-					var map = headerIndex[header], val = value;
-					if (meta === 'see') {
+					var 
+						map = headerIndex[header],
+						val = value,
+						propertyArray = [],
+						prop = map !== undefined ? map['@id'] : undefined;
+					if (meta === 'url') {
+						if (header !== '#' && value !== '') {
+							val = $.uri.resolve(value, base).toString();
+							if (val !== prop) {
+								map['@id'] = val;
+								if (propertyIndex[val] === undefined) {
+									propertyArray.push(map);
+									propertyIndex[val] = propertyArray;
+								} else {
+									propertyArray = propertyIndex[val];
+									propertyArray.push(map);						
+								}
+								// remove the old version
+								propertyArray = [];
+								$.each(propertyIndex[prop], function(index, property) {
+									if (property['@id'] !== val) {
+										propertyArray.push(property);
+									}
+								});
+								if (propertyArray.length === 0) {
+									delete propertyIndex[prop];
+								}
+							}
+						}
+					} else if (meta === 'type' || meta === 'lang') {
+						if (header !== '#' && value !== '') {
+							map[meta] = value;
+						}
+					} else if (meta === 'see') {
 						if (header !== '#' && value !== '') {
 							val = $.uri.resolve(value, base).toString();
 							if (map.see === undefined) map.see = {};
@@ -102,43 +125,51 @@
 						}
 						if (val !== '') {
 							r[header] = val;
-							if (entity[map.property]) {
-								if ($.isArray(entity[map.property])) {
-									entity[map.property].push(val);
+							if (entity[prop]) {
+								if ($.isArray(entity[prop])) {
+									entity[prop].push(val);
 								} else {
-									entity[map.property] = [entity[map.property], val];
+									entity[prop] = [entity[prop], val];
 								}
 							} else {
-								entity[map.property] = val;
+								entity[prop] = val;
 							}
 						}
 					}
 				});
 				if (row['#'] && row['#'] !== '') {
 					// row doesn't contain any entities
-				} else if (id === null || entityIndex[id] === undefined) {
-					// add the new entity to the entity index
-					entities.push(entity);
-					if (id !== null) entityIndex[id] = entity;
 				} else {
-					// update the existing entity with the additional information
-					$.each(entity, function (prop, value) {
-						if (prop !== '@id') {
-							var current = entityIndex[id][prop];
-							if ($.isArray(current)) {
-								if ($.isArray(entity[prop])) {
-									entityIndex[id][prop] = current.concat(entity[prop]);
-								} else {
-									entityIndex[id][prop].push(entity[prop]);
+					if (id === null || entityIndex[id] === undefined) {
+						// add the new entity to the entity index
+						entities.push(entity);
+						if (id !== null) entityIndex[id] = entity;
+					} else {
+						// update the existing entity with the additional information
+						$.each(entity, function (prop, value) {
+							if (prop !== '@id') {
+								var current = entityIndex[id][prop];
+								if ($.isArray(current)) {
+									if ($.isArray(entity[prop])) {
+										entityIndex[id][prop] = current.concat(entity[prop]);
+									} else {
+										entityIndex[id][prop].push(entity[prop]);
+									}
+								} else if (current !== entity[prop]) {
+									entityIndex[id][prop] = [current, entity[prop]];
 								}
-							} else if (current !== entity[prop]) {
-								entityIndex[id][prop] = [current, entity[prop]];
 							}
-						}
-					});
+						});
+					}
+					rows.push(r);
 				}
-				rows.push(r);
 			});
+
+			// create the array of properties from the propertyIndex
+			$.each(propertyIndex, function(id, prop) {
+				properties.push(prop);
+			});
+
 			linkedCSV.headers = function() {
 				return $(headers);
 			};

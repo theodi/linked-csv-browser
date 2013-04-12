@@ -1,5 +1,5 @@
 "#","$id","country","google_country_code","$country_group","name@en","name@fr","name@de","latitude","longitude"
-"see","","","","country_groups.csv","","","","",""
+"see","extra_info.csv","","","country_groups.csv","","","","",""
 "","http://example.org/country/at","at","AT","http://example.org/country-group/eu","Austria","Autriche","Österreich","47.6965545","13.34598005"
 "","http://example.org/country/be","be","BE","http://example.org/country-group/eu","Belgium","Belgique","Belgien","50.501045","4.47667405"
 "","http://example.org/country/bg","bg","BG","http://example.org/country-group/eu","Bulgaria","Bulgarie","Bulgarien","42.72567375","25.4823218"

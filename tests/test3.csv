@@ -1,5 +1,7 @@
-$id,country,name@en,name@fr
-http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre
-http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,
-http://en.wikipedia.org/wiki/Afghanistan,AF,Afghanistan,Afghanistan
-http://en.wikipedia.org/wiki/Afghanistan,,Islamic Republic of Afghanistan,
+#,$id,country,english name,french name
+url,,,#name,#name
+lang,,,en,fr
+,http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre
+,http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,
+,http://en.wikipedia.org/wiki/Afghanistan,AF,Afghanistan,Afghanistan
+,http://en.wikipedia.org/wiki/Afghanistan,,Islamic Republic of Afghanistan,

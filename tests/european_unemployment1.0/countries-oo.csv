@@ -1,0 +1,32 @@
+#,$id,country,google_country_code,$country_group,name@en,name@fr,name@de,latitude,longitude
+see,,,,country_groups.csv,,,,,
+,http://example.org/country/at,at,AT,http://example.org/country-group/eu,Austria,Autriche,Österreich,47.6965545,13.34598005
+,http://example.org/country/be,be,BE,http://example.org/country-group/eu,Belgium,Belgique,Belgien,50.501045,4.47667405
+,http://example.org/country/bg,bg,BG,http://example.org/country-group/eu,Bulgaria,Bulgarie,Bulgarien,42.72567375,25.4823218
+,http://example.org/country/hr,hr,HR,http://example.org/country-group/non-eu,Croatia,Croatie,Kroatien,44.74664297,15.34084438
+,http://example.org/country/cy,cy,CY,http://example.org/country-group/eu,Cyprus,Chypre,Zypern,35.129141,33.4286823
+,http://example.org/country/cz,cz,CZ,http://example.org/country-group/eu,Czech Republic,République tchèque,Tschechische Republik,49.803531,15.47499805
+,http://example.org/country/dk,dk,DK,http://example.org/country-group/eu,Denmark,Danemark,Dänemark,55.93968425,9.51668905
+,http://example.org/country/ee,ee,EE,http://example.org/country-group/eu,Estonia,Estonie,Estland,58.5924685,25.8069503
+,http://example.org/country/fi,fi,FI,http://example.org/country-group/eu,Finland,Finlande,Finnland,64.95015875,26.06756405
+,http://example.org/country/fr,fr,FR,http://example.org/country-group/eu,France,France,Frankreich,46.7109945,1.7185608
+,http://example.org/country/de,de,DE,http://example.org/country-group/eu,Germany (including  former GDR from 1991),Allemagne (incluant l'ancienne RDA à partir de 1991),Deutschland (einschließlich der ehemaligen DDR seit 1991),51.16382538,10.4540478
+,http://example.org/country/gr,gr,GR,http://example.org/country-group/eu,Greece,Grèce,Griechenland,39.698467,21.57725572
+,http://example.org/country/hu,hu,HU,http://example.org/country-group/eu,Hungary,Hongrie,Ungarn,47.16116325,19.5042648
+,http://example.org/country/ie,ie,IE,http://example.org/country-group/eu,Ireland,Irlande,Irland,53.41526,-8.2391222
+,http://example.org/country/it,it,IT,http://example.org/country-group/eu,Italy,Italie,Italien,42.504191,12.57378705
+,http://example.org/country/lv,lv,LV,http://example.org/country-group/eu,Latvia,Lettonie,Lettland,56.880117,24.60655505
+,http://example.org/country/lt,lt,LT,http://example.org/country-group/eu,Lithuania,Lituanie,Litauen,55.173687,23.9431678
+,http://example.org/country/lu,lu,LU,http://example.org/country-group/eu,Luxembourg,Luxembourg,Luxemburg,49.815319,6.13335155
+,http://example.org/country/mt,mt,MT,http://example.org/country-group/eu,Malta,Malte,Malta,35.902422,14.4474608
+,http://example.org/country/nl,nl,NL,http://example.org/country-group/eu,Netherlands,Pays-Bas,Niederlande,52.10811825,5.3301983
+,http://example.org/country/no,no,NO,http://example.org/country-group/non-eu,Norway,Norvège,Norwegen,64.55645975,12.66576565
+,http://example.org/country/pl,pl,PL,http://example.org/country-group/eu,Poland,Pologne,Polen,51.91890725,19.1343338
+,http://example.org/country/pt,pt,PT,http://example.org/country-group/eu,Portugal,Portugal,Portugal,39.55806875,-7.84494095
+,http://example.org/country/ro,ro,RO,http://example.org/country-group/eu,Romania,Roumanie,Rumänien,45.94261125,24.99015155
+,http://example.org/country/sk,sk,SK,http://example.org/country-group/eu,Slovakia,Slovaquie,Slowakei,48.67264375,19.7000323
+,http://example.org/country/si,si,SI,http://example.org/country-group/eu,Slovenia,Slovénie,Slowenien,46.14925925,14.98661705
+,http://example.org/country/es,es,ES,http://example.org/country-group/eu,Spain,Espagne,Spanien,39.8950135,-2.9882957
+,http://example.org/country/se,se,SE,http://example.org/country-group/eu,Sweden,Suède,Schweden,62.1984675,14.89630657
+,http://example.org/country/tr,tr,TR,http://example.org/country-group/non-eu,Turkey,Turquie,Türkei,38.95294205,35.43979471
+,http://example.org/country/uk,uk,GB,http://example.org/country-group/eu,United Kingdom,Royaume-Uni,Vereinigtes Königreich,54.315447,-2.23261195

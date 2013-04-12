@@ -1,4 +1,5 @@
-#,$country,year^^date,population^^integer
+#,country,year,population
+type,url,time,integer
 see,test3.csv,,
 ,http://en.wikipedia.org/wiki/Afghanistan,1960,9616353
 ,http://en.wikipedia.org/wiki/Afghanistan,1961,9799379
