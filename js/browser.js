@@ -103,7 +103,7 @@ $(document).ready(function() {
             $filenameRow.append('<th colspan="1">' + filename + '</th>');
           }
           if (this.lang || this.type) {
-            if ($lastFilename.text() === filename && $lastProperty.text() === label) {
+            if ($lastFilename.text() === filename && $lastProperty.html() === label) {
               $lastProperty.attr('colspan', parseInt($lastProperty.attr('colspan') || 1) + 1);
             } else {
               $propertyHeaderRow.append('<th colspan="1">' + label + '</th>');
