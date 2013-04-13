@@ -86,7 +86,7 @@
 					}
 					return val;
 				};
-			csv = $.csv.toObjects(data);
+			csv = $.csv.toObjects(data.replace(/\r([^\n])/g, '\r\n$1'));
 
 			// process the header row
 			$.each(csv[0], function(header, value) {
@@ -280,6 +280,9 @@
 
 			linkedCSV.headers = function() {
 				return $(headers);
+			};
+			linkedCSV.header = function(id) {
+				return headerIndex[id];
 			};
 			linkedCSV.rows = function() {
 				return $(rows);

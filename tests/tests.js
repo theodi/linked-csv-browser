@@ -13,6 +13,39 @@ asyncTest("reading from file", function() {
 	});
 });
 
+test("linked CSV with only x0D line endings column", function() {
+	$.linkedCSV({
+		data: "$id,country,name\r" +
+"#AD,AD,Andorra\r" +
+"#AD,AD,Principality of Andorra\r" +
+"#AF,AF,Afghanistan\r" +
+"#AF,AF,Islamic Republic of Afghanistan", 
+		base: 'http://example.org/data/countries',
+		success: function (data) {
+			ok(data, "we get some data from the CSV");
+			equal(data.rows().length, 4, "there should be four rows");
+			deepEqual(data.rows().get(0), {
+				'$id': 'http://example.org/data/countries#AD',
+				'country': 'AD',
+				'name': 'Andorra'
+			})
+			deepEqual(data.properties().get(0), [{
+					'@id': 'http://example.org/data/countries#country',
+					'name': 'country'
+				}], "the properties() method should return information about the properties");
+			deepEqual(data.properties().get(1), [{
+					'@id': 'http://example.org/data/countries#name',
+					'name': 'name'
+				}], "the properties() method should return information about the properties");
+			equal(data.entities().length, 2, "there should be two entities");
+			equal(data.entities().get(0)['@id'], 'http://example.org/data/countries#AD', "should resolve URIs in ids");
+			equal(data.entities().get(1)['@id'], 'http://example.org/data/countries#AF', "should collect the two entities");
+			equal(data.entities().get(0)['http://example.org/data/countries#country'], 'AD', "should pull out the value of the country property");
+			deepEqual(data.entities().get(0)['http://example.org/data/countries#name'], ['Andorra', 'Principality of Andorra'], "should pull out both values of the name property");
+		}
+	});
+});
+
 test("linked CSV with $id column", function() {
 	$.linkedCSV({
 		data: "$id,country,name\r\n" +
