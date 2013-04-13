@@ -1,3 +1,5 @@
-$id,country_group,name@en,name@fr,name@de
-http://example.org/country-group/eu,eu,"European Union","Union européenne","Europäische Union"
-http://example.org/country-group/non-eu,non-eu,"Non EU countries","Pays hors Union européenne",Nicht-EU-Länder
+#,$id,country_group,english_name,french_name,german_name
+url,,,#name,#name,#name
+lang,,,en,fr,de
+,http://example.org/country-group/eu,eu,"European Union","Union européenne","Europäische Union"
+,http://example.org/country-group/non-eu,non-eu,"Non EU countries","Pays hors Union européenne",Nicht-EU-Länder
