@@ -160,6 +160,39 @@ test("linked CSV with language columns", function() {
 	});
 });
 
+test("linked CSV with metadata", function() {
+	$.linkedCSV({
+		data: "#,$id,country,english name,french name,\r\n" +
+"lang,,,en,fr,\r\n" +
+"url,,,#name,#name,\r\n" +
+"meta,#country,label,en,Country,rdfs:label\r\n" +
+"meta,#name,label,en,Name,rdfs:label\r\n" +
+",http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre,\r\n" +
+",http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,,\r\n" +
+",http://en.wikipedia.org/wiki/Afghanistan,AF,Afghanistan,Afghanistan,\r\n" +
+",http://en.wikipedia.org/wiki/Afghanistan,,Islamic Republic of Afghanistan,,", 
+		base: 'http://example.org/data/countries',
+		success: function (data) {
+			ok(data, "we get some data from the CSV");
+			equal(data.rows().length, 4, "there should be four rows");
+			deepEqual(data.meta(), {
+				"http://example.org/data/countries#country": {
+					"@id": "http://example.org/data/countries#country",
+					"rdfs:label": {
+						"en": "Country"
+					}
+				},
+				"http://example.org/data/countries#name": {
+					"@id": "http://example.org/data/countries#name",
+					"rdfs:label": {
+						"en": "Name"
+					}
+				}
+			})
+		}
+	});
+});
+
 asyncTest("linked documents", function() {
 	var data = $.linkedCSV({
 		url: 'test2.csv', 

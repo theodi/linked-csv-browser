@@ -1,5 +1,7 @@
 #,$id,country_group,english_name,french_name,german_name
 url,,,#name,#name,#name
 lang,,,en,fr,de
+meta,#country_group,label,en,Country Group,rdfs:label
+meta,#name,label,en,Name,rdfs:label
 ,http://example.org/country-group/eu,eu,"European Union","Union européenne","Europäische Union"
 ,http://example.org/country-group/non-eu,non-eu,"Non EU countries","Pays hors Union européenne",Nicht-EU-Länder

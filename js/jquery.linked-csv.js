@@ -3,6 +3,21 @@
 		langHeaderRegex = /^(.+)+@(.+)$/,
 		datatypeHeaderRegex = /^(.+)\^\^(.+)$/,
 		urlHeaderRegex = /^\$(.+)/,
+		namespaces = {
+			'rel': "http://www.iana.org/assignments/relation/", // IANA Link Relations
+			'schema': "http://schema.org/", // schema.org
+			'dc': "http://purl.org/dc/terms/", // Dublin Core Metadata Terms
+			'dct': "http://purl.org/dc/terms/", // Dublin Core Metadata Terms
+			'cc': "http://creativecommons.org/ns#", // Creative Commons Rights Expression Language
+			'void': "http://rdfs.org/ns/void#", // VoID
+			'wdrs': "http://www.w3.org/2007/05/powder-s#", // POWDER-S
+			'rdf': "http://www.w3.org/1999/02/22-rdf-syntax-ns#", // RDF
+			'rdfs': "http://www.w3.org/2000/01/rdf-schema#", // RDF Schema
+			'owl': "http://www.w3.org/2002/07/owl#", // OWL
+			'skos': "http://www.w3.org/2004/02/skos/core#", // SKOS
+			'skos-xl': "http://www.w3.org/2008/05/skos-xl#", // SKOS Extensions for Labels			
+		},
+		prefixRegex = new RegExp('^(' + Object.keys(namespaces).join('|') + '):(.+)$'),
 
 		init = function (linkedCSV, data, base) {
 			var
@@ -17,9 +32,60 @@
 				headerIndex = {},
 				entityIndex = {},
 				propertyIndex = {},
-				firstDataRow = 0,
-				toLoad = 0,
-				loaded = 0;
+				metadata = {},
+				parseProp = function(prop, expand) {
+					var match;
+					if (prefixRegex.test(prop)) {
+						if (expand) {
+							match = prefixRegex.exec(prop);
+							return namespaces[match[1]] + match[2];
+						} else {
+							return prop;
+						}
+					} else {
+						return $.uri(prop, base).toString();
+					}
+				},
+				parseValue = function(value, type, lang) {
+					var val = value;
+					if (type === 'url') {
+						val = {
+							'@id': $.uri.resolve(value, base).toString()
+						};
+					} else if (type === 'string') {
+						val = value;
+					} else if (type === 'integer') {
+						val = parseInt(value);
+					} else if (type in ['decimal', 'double']) {
+						val = parseFloat(value);
+					} else if (type === 'boolean') {
+						val = value === 'true';
+					} else if (type === 'time') {
+						if (/^\d{4,}$/.test(value)) {
+							val = parseInt(value);
+						} else if (/^\d{4,}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2})?$/.test(value)) {
+							val = {
+								'@value': value,
+								'@type': 'http://www.w3.org/2001/XMLSchema#date'
+							}
+						} else if (/^\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/.test(value)) {
+							val = {
+								'@value': value,
+								'@type': 'http://www.w3.org/2001/XMLSchema#dateTime'
+							}
+						}
+					} else if (lang !== undefined) {
+						if (value !== '') {
+							val = {
+								'@value': value,
+								'@lang': lang
+							}
+						}
+					} else if (/^\d{4,}$/.test(value)) {
+						val = parseInt(value);
+					}
+					return val;
+				};
 			csv = $.csv.toObjects(data);
 
 			// process the header row
@@ -44,99 +110,141 @@
 				return true;
 			});
 
+			// process the remaining rows
 			$.each(csv, function(index, row) {
 				var
 					id = row['$id'] ? $.uri(row['$id'], base) : null,
 					entity = id === null ? {} : {'@id': id.toString()},
 					r = id === null ? {} : {'$id': id.toString()},
-					meta = row['#'];
-				$.each(row, function (header, value) {
-					var 
-						map = headerIndex[header],
-						val = value,
-						propertyArray = [],
-						prop = map !== undefined ? map['@id'] : undefined;
-					if (meta === 'url') {
-						if (header !== '#' && value !== '') {
-							val = $.uri.resolve(value, base).toString();
-							if (val !== prop) {
-								map['@id'] = val;
-								if (propertyIndex[val] === undefined) {
-									propertyArray.push(map);
-									propertyIndex[val] = propertyArray;
-								} else {
-									propertyArray = propertyIndex[val];
-									propertyArray.push(map);						
-								}
-								// remove the old version
-								propertyArray = [];
-								$.each(propertyIndex[prop], function(index, property) {
-									if (property['@id'] !== val) {
-										propertyArray.push(property);
-									}
-								});
-								if (propertyArray.length === 0) {
-									delete propertyIndex[prop];
-								}
-							}
+					meta = row['#'],
+					triple = [],
+					label, type, lang, value, prop;
+				if (meta === 'meta') {
+					id = id === null ? base : id;
+					entity = metadata[id] || entity;
+					entity['@id'] = id.toString();
+					$.each(row, function(header, value) {
+						if (header !== '#' && header !== '$id') {
+							triple.push(value);
 						}
-					} else if (meta === 'type' || meta === 'lang') {
-						if (header !== '#' && value !== '') {
-							map[meta] = value;
-						}
-					} else if (meta === 'see') {
-						if (header !== '#' && value !== '') {
-							val = $.uri.resolve(value, base).toString();
-							if (map.see === undefined) map.see = {};
-							if (map.see[value] === undefined) {
-								// not supplying a success function ensures this is synchronous
-								map.see[value] = $.linkedCSV({
-									url: val,
-									base: val
-								});
-							}
-						}
-					} else if (header !== '$id' && header !== '#') {
-						if (map.type === 'url') {
-							val = {
-								'@id': $.uri.resolve(value, base).toString()
-							};
-						} else if (map.type === 'string') {
-							val = value;
-						} else if (map.type === 'integer') {
-							val = parseInt(value);
-						} else if (map.type === 'decimal' || map.type === 'double') {
-							val = parseFloat(value);
-						} else if (map.type === 'boolean') {
-							val = value === 'true';
-						} else if (map.type === 'time') {
-							if (/^\d{4,}$/.test(value)) {
-								val = parseInt(value);
-							}
-						} else if (map.lang !== undefined) {
-							if (value !== '') {
-								val = {
-									'@value': value,
-									'@lang': map.lang
-								}
-							}
-						} else if (/^\d{4,}$/.test(value)) {
-							val = parseInt(value);
-						}
-						if (val !== '') {
-							r[header] = val;
-							if (entity[prop]) {
-								if ($.isArray(entity[prop])) {
-									entity[prop].push(val);
-								} else {
-									entity[prop] = [entity[prop], val];
-								}
-							} else {
-								entity[prop] = val;
-							}
+					});
+					if (triple.length === 2) {
+						label = triple[0]
+						value = triple[1];
+					} else {
+						if (triple[1] in ['string', 'url', 'integer', 'decimal', 'double', 'boolean', 'time']) {
+							label = triple[0];
+							type = triple[1];
+							value = triple[2];
+							prop = triple[3] ? parseProp(triple[3]) : undefined;
+						} else if (/^[a-z]{2}$/.test(triple[1])) {
+							label = triple[0];
+							lang = triple[1];
+							value = triple[2];
+							prop = triple[3] ? parseProp(triple[3]) : undefined;
+						} else if (triple.length === 4) {
+							label = triple[0];
+							type = parseProp(triple[1], true);
+							value = triple[2];
+							prop = triple[3] ? parseProp(triple[3]) : undefined;
+						} else {
+							value = triple[1];
+							prop = triple[2] ? parseProp(triple[2]) : undefined;
 						}
 					}
-				});
+					if (prop === undefined) {
+						prop = parseProp('#' + label);
+					}
+					if (lang === undefined) {
+						value = parseValue(value, type, lang);
+						if (prop in entity) {
+							if ($.isArray(entity[prop])) {
+								entity[prop].push(value);
+							} else {
+								entity[prop] = [entity[prop], value];
+							}
+						} else {
+							entity[prop] = value;
+						}
+					} else if (prop in entity && lang in entity[prop]) {
+						if ($.isArray(entity[prop][lang])) {
+							entity[prop][lang].push(value);
+						} else {
+							entity[prop][lang] = [entity[prop][lang], value];
+						}
+					} else if (prop in entity) {
+						entity[prop][lang] = value;
+					} else {
+						entity[prop] = {};
+						entity[prop][lang] = value;
+					}
+					if (!(id in metadata)) {
+						metadata[id] = entity;
+					}
+				} else {
+					$.each(row, function (header, value) {
+						var 
+							map = headerIndex[header],
+							val = value,
+							propertyArray = [],
+							prop = map !== undefined ? map['@id'] : undefined;
+						if (meta === 'url') {
+							if (header !== '#' && value !== '') {
+								val = $.uri.resolve(value, base).toString();
+								if (val !== prop) {
+									map['@id'] = val;
+									if (propertyIndex[val] === undefined) {
+										propertyArray.push(map);
+										propertyIndex[val] = propertyArray;
+									} else {
+										propertyArray = propertyIndex[val];
+										propertyArray.push(map);						
+									}
+									// remove the old version
+									propertyArray = [];
+									$.each(propertyIndex[prop], function(index, property) {
+										if (property['@id'] !== val) {
+											propertyArray.push(property);
+										}
+									});
+									if (propertyArray.length === 0) {
+										delete propertyIndex[prop];
+									}
+								}
+							}
+						} else if (meta === 'type' || meta === 'lang') {
+							if (header !== '#' && value !== '') {
+								map[meta] = value;
+							}
+						} else if (meta === 'see') {
+							if (header !== '#' && value !== '') {
+								val = $.uri.resolve(value, base).toString();
+								if (map.see === undefined) map.see = {};
+								if (map.see[value] === undefined) {
+									// not supplying a success function ensures this is synchronous
+									map.see[value] = $.linkedCSV({
+										url: val,
+										base: val
+									});
+								}
+							}
+						} else if (header !== '$id' && header !== '#') {
+							val = parseValue(value, map.type, map.lang);
+							if (val !== '') {
+								r[header] = val;
+								if (entity[prop]) {
+									if ($.isArray(entity[prop])) {
+										entity[prop].push(val);
+									} else {
+										entity[prop] = [entity[prop], val];
+									}
+								} else {
+									entity[prop] = val;
+								}
+							}
+						}
+					});
+				}
 				if (row['#'] && row['#'] !== '') {
 					// row doesn't contain any entities
 				} else {
@@ -184,6 +292,9 @@
 			};
 			linkedCSV.entity = function(id) {
 				return entityIndex[id];
+			};
+			linkedCSV.meta = function() {
+				return metadata;
 			};
 			return linkedCSV;
 		};

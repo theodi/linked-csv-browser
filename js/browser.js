@@ -1,7 +1,22 @@
 $(document).ready(function() {
 	var
+		urlRegex = /(#(.+)|\/([^\/#]+))$/,
+
 	  linkCell = function (id) {
 	    return $('<td><a class="btn btn-mini" href="' + id + '"><i class="icon-share"></i></a></td>');
+	  },
+
+	  headerValue = function (value, meta) {
+	  	var v;
+	  	if (value in meta && 'rdfs:label' in meta[value]) {
+	  		v = meta[value]['rdfs:label'];
+	  		if ($.isArray(v)) v = v[0];
+	  		if (typeof v === 'object') v = v['en'];
+	  		return v;
+	  	} else {
+	  		v = urlRegex.exec(value);
+	  		return v ? (v[2] || v[3]) : value;
+	  	}
 	  },
 
 	  tableValue = function (value, includeBadge) {
@@ -57,7 +72,6 @@ $(document).ready(function() {
 	  },
 
 	  addPropertyCells = function($row, entity, data) {
-	  	console.log(data.properties());
 	    $.each(data.properties(), function (i, headers) {
 			var value = '&nbsp;';
 			value = entity ? entity[headers[0]['@id']] || value : value;
@@ -79,7 +93,8 @@ $(document).ready(function() {
 	    data.headers().each(function (index) {
 	      var
 	        $lastFilename = $filenameRow.find('th:last'),
-	        $lastProperty = $propertyHeaderRow.find('th:last');
+	        $lastProperty = $propertyHeaderRow.find('th:last'),
+	        label = headerValue(this['@id'], data.meta());
 	      if (this['@id']) {
 	        if (this.see) {
 	          $.each(this.see, function (filename, data) {
@@ -94,14 +109,14 @@ $(document).ready(function() {
 	            $filenameRow.append('<th colspan="1">' + filename + '</th>');
 	          }
 	          if (this.lang || this.type) {
-	            if ($lastFilename.text() === filename && $lastProperty.text() === this['@id']) {
+	            if ($lastFilename.text() === filename && $lastProperty.text() === label) {
 	              $lastProperty.attr('colspan', parseInt($lastProperty.attr('colspan') || 1) + 1);
 	            } else {
-	              $propertyHeaderRow.append('<th colspan="1">' + this['@id'] + '</th>');
+	              $propertyHeaderRow.append('<th colspan="1">' + label + '</th>');
 	            }
 	            $annotationHeaderRow.append('<th><span class="badge">' + (this.lang || this.type) + '</span></th>');
 	          } else {
-	            $propertyHeaderRow.append('<th rowspan="2">' + this['@id'] + '</th>');
+	            $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
 	          }
 	        }
 	      }
@@ -117,7 +132,8 @@ $(document).ready(function() {
 	    $.each(data.properties(), function (property, details) {
 	      var
 	        $lastFilename = $filenameRow.find('th:last'),
-	        $lastProperty = $propertyHeaderRow.find('th:last');
+	        $lastProperty = $propertyHeaderRow.find('th:last'),
+	        label = headerValue(details[0]['@id'], data.meta());
 	      if ($lastFilename.text() === filename) {
 	        // increase the colspan
 	        $lastFilename.attr('colspan', parseInt($lastFilename.attr('colspan') || 1) + details.length);
@@ -126,9 +142,9 @@ $(document).ready(function() {
 	        $filenameRow.append('<th colspan="' + details.length + '">' + filename + '</th>');
 	      }
 	      if (details.length === 1) {
-		      $propertyHeaderRow.append('<th rowspan="2">' + details[0]['@id'] + '</th>');
+		      $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
 	      } else {
-		      $propertyHeaderRow.append('<th colspan="' + details.length + '">' + details[0]['@id'] + '</th>');
+		      $propertyHeaderRow.append('<th colspan="' + details.length + '">' + label + '</th>');
 		      $.each(details, function(index, property) {
 	            $annotationHeaderRow.append('<th><span class="badge">' + (property.lang || property.type) + '</span></th>');
 		      });
