@@ -57,26 +57,27 @@ $(document).ready(function() {
 	        $row = $('<tr></tr>').append($idCell).appendTo($body);
 	      addCells($row, this, data);
 	    });
-	    pager = '<ul class="pager">';
-	    if (start === 0) {
-	    	pager += '<li class="previous disabled"><a href="#row=' + start + '-' + end + '">Previous</a></li>';
-	    } else {
-	    	pager +=
-    			'<li class="previous">' +
-    				'<a href="#row=' + (start - 50) + '-' + start + '">Previous</a>' +
-    			'</li>';
+	    if (start > 0 || end < rows.length) {
+		    pager = '<ul class="pager">';
+		    if (start === 0) {
+		    	pager += '<li class="previous disabled"><a href="#row=' + start + '-' + end + '">Previous</a></li>';
+		    } else {
+		    	pager +=
+	    			'<li class="previous">' +
+	    				'<a href="#row=' + (start - 50) + '-' + start + '">Previous</a>' +
+	    			'</li>';
+		    }
+		    if (end >= rows.length) {
+		    	pager += '<li class="next disabled"><a href="#row=' + start + '-' + end + '">Next</a></li>';
+		    } else {
+		    	pager +=
+	    			'<li class="next">' + 
+	    				'<a href="#row=' + end + '-' + (end + 50) + '">Next</a>' + 
+	    			'</li>';
+		    }
+		    pager += '</ul>';
+		    $table.after('<div class="container">' + pager + '</div>');
 	    }
-	    if (end >= rows.length) {
-	    	pager += '<li class="next disabled"><a href="#row=' + start + '-' + end + '">Next</a></li>';
-	    } else {
-	    	pager +=
-    			'<li class="next">' + 
-    				'<a href="#row=' + end + '-' + (end + 50) + '">Next</a>' + 
-    			'</li>';
-	    }
-	    pager += '</ul>';
-	    colspan = $body.find('tr:first td').length;
-	    $body.append('<tr><td colspan="' + colspan + '">' + pager + '</td></tr>');
 	  },
 
 	  addCells = function($row, row, data) {
@@ -208,43 +209,45 @@ $(document).ready(function() {
 	      }
 	    });
 	    return $table;
-	  };
+	  },
+	  query = document.location.search,
+	  url = /^\?url=/.test(query) ? decodeURIComponent(query.substring(5)) : null,
+	  filename;
 
-	$.linkedCSV({
-	  url: 'tests/european_unemployment1.0/country_sex_age.csv', 
-	  base: $.uri.base(),
-	  success: function(data) {
-	    var 
-	    	fragment = document.location.hash;
-	    	filename = 'country_sex_age.csv',
-	    	$table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"></tr><tr class="property"></tr><tr class="annotation"></tr></thead><tbody></tbody></table>').appendTo($('#tables')),
-	    	$filenameRow = $table.find('tr.filename'),
-	    	$propertyRow = $table.find('tr.property'),
-	    	match = [];
-	    if (data.header('$id')) {
-	    	$filenameRow.append('<th colspan="1">' + filename + '</th>');
-	    	$propertyRow.append('<th rowspan="2"></th>');
-	    }
-	    addHeaders($table, filename, data);
-	    if (fragidRegex.test(fragment)) {
-	    	match = fragidRegex.exec(fragment);
-		    addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
-	    } else {
-	    	document.location.hash = '#row=0-50';
-	    	addRows($table, data, 0, 50);
-	    }
-	    window.onhashchange = function (event) {
-	    	var match = fragidRegex.exec(document.location.hash);
-	    	if (match) {
-		    	$table.find('tbody').html('');
-		    	addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
-	    	}
-	    };
-	    /*
-	    $table.dataTable({
-	      bLengthChange: false,
-	    });
-	*/
-	  }
-	});
+  if (url) {
+  	filename = urlRegex.exec(url)[3];
+  	$('#load-url').val(url);
+  	$.linkedCSV({
+			  url: url, 
+			  base: $.uri.base(),
+			  success: function(data) {
+			    var 
+			    	fragment = document.location.hash;
+			    	filename = filename,
+			    	$table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"></tr><tr class="property"></tr><tr class="annotation"></tr></thead><tbody></tbody></table>').appendTo($('#tables')),
+			    	$filenameRow = $table.find('tr.filename'),
+			    	$propertyRow = $table.find('tr.property'),
+			    	match = [];
+			    if (data.header('$id')) {
+			    	$filenameRow.append('<th colspan="1">' + filename + '</th>');
+			    	$propertyRow.append('<th rowspan="2"></th>');
+			    }
+			    addHeaders($table, filename, data);
+			    if (fragidRegex.test(fragment)) {
+			    	match = fragidRegex.exec(fragment);
+				    addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
+			    } else {
+			    	document.location.hash = '#row=0-50';
+			    	addRows($table, data, 0, 50);
+			    }
+			    window.onhashchange = function (event) {
+			    	var match = fragidRegex.exec(document.location.hash);
+			    	if (match) {
+				    	$table.find('tbody').html('');
+				    	addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
+			    	}
+			    };
+			  }
+			});
+		}
 })

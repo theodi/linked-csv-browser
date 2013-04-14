@@ -12,6 +12,9 @@
       body {
         padding-top: 60px;
       }
+      #tables {
+        overflow: auto;
+      }
     </style>
   </head>
   <body>
@@ -29,8 +32,17 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid">
+    <div class="container">
       <h1>Linked CSV Browser <small>navigating tabular data</small></h1>
+      <form action="" method="get">
+        <p class="input-append">
+          <input id="load-url" name="url" class="input-xxlarge" type="url" placeholder="URL of Linked CSV" />
+          <button id="load-btn" class="btn" type="submit">Load</button>
+        </p>
+      </form>
+    </div>
+    <div class="container-fluid">
+      <hr />
       <div id="tables">
       </div>
     </div>
