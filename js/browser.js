@@ -99,21 +99,38 @@ $(document).ready(function() {
 	  	var html = '';
 	  	if ('@html' in entity) {
 				html = entity['@html'];	 
+				$row.append(html);
 	  	} else {
 		    $.each(data.properties(), function (i, headers) {
-					var value = '&nbsp;';
+					var value = '&nbsp;', cell;
 					value = entity ? entity[headers[0]['@id']] || value : value;
 					if ($.isArray(value)) {
 						$.each(value, function(k, val) {
-							html += '<td>' + tableValue(val, false) + '</td>';
+							var cell = '<td>' + tableValue(val, false) + '</td>';
+							html += cell;
+							$row.append(cell);
+			        if (headers[k].see) {
+			          $.each(headers[k].see, function (filename, data) {
+			            var entity = data.entity(value['@id']);
+			            html += addPropertyCells($row, entity, data);
+			          });
+			        }
 						});
 					} else {
-						html += '<td>' + tableValue(value, false) + '</td>';
+						cell = '<td>' + tableValue(value, false) + '</td>';
+						html += cell;
+						$row.append(cell);
+		        if (headers[0].see) {
+		          $.each(headers[0].see, function (filename, data) {
+		            var entity = data.entity(value['@id']);
+		            html += addPropertyCells($row, entity, data);
+		          });
+		        }
 					}
 		    });
 		    entity['@html'] = html;
 	  	}
-			$row.append(html);
+			return html;
 	  },
 
 	  addHeaders = function($table, filename, data) {
@@ -173,10 +190,20 @@ $(document).ready(function() {
 	      }
 	      if (details.length === 1) {
 		      $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
+	        if (details[0].see) {
+	          $.each(details[0].see, function (filename, data) {
+	            addPropertyHeaders($table, filename, data);
+	          });
+	        }
 	      } else {
 		      $propertyHeaderRow.append('<th colspan="' + details.length + '">' + label + '</th>');
 		      $.each(details, function(index, property) {
 	            $annotationHeaderRow.append('<th><span class="badge">' + (property.lang || property.type) + '</span></th>');
+			        if (property.see) {
+			          $.each(property.see, function (filename, data) {
+			            addPropertyHeaders($table, filename, data);
+			          });
+			        }
 		      });
 	      }
 	    });
@@ -184,12 +211,12 @@ $(document).ready(function() {
 	  };
 
 	$.linkedCSV({
-	  url: 'tests/european_unemployment1.0/country_sex_age_at.csv', 
+	  url: 'tests/european_unemployment1.0/country_sex_age.csv', 
 	  base: $.uri.base(),
 	  success: function(data) {
 	    var 
 	    	fragment = document.location.hash;
-	    	filename = 'country_sex_age_at.csv',
+	    	filename = 'country_sex_age.csv',
 	    	$table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"></tr><tr class="property"></tr><tr class="annotation"></tr></thead><tbody></tbody></table>').appendTo($('#tables')),
 	    	$filenameRow = $table.find('tr.filename'),
 	    	$propertyRow = $table.find('tr.property'),
