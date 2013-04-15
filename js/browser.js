@@ -48,9 +48,10 @@ $(document).ready(function() {
 	  addRows = function($table, data, start, end) {
 	    var 
 	    	$body = $table.find('tbody'),
+	    	$pager = $table.parent().find('.pager'),
+	    	pager = '',
 	    	colspan = 1,
-	    	rows = data.rows(),
-	    	pager = '';
+	    	rows = data.rows();
 	    rows.slice(start, end).each(function (index) {
 	      var 
 	        $idCell = linkCell(this['$id']),
@@ -58,8 +59,7 @@ $(document).ready(function() {
 	      addCells($row, this, data);
 	    });
 	    if (start > 0 || end < rows.length) {
-		    pager = '<ul class="pager">';
-		    if (start === 0) {
+	    	if (start <= 0) {
 		    	pager += '<li class="previous disabled"><a href="#row=' + start + '-' + end + '">Previous</a></li>';
 		    } else {
 		    	pager +=
@@ -75,8 +75,9 @@ $(document).ready(function() {
 	    				'<a href="#row=' + end + '-' + (end + 50) + '">Next</a>' + 
 	    			'</li>';
 		    }
-		    pager += '</ul>';
-		    $table.after('<div class="container">' + pager + '</div>');
+		    $pager.html(pager);
+	    } else {
+	    	$pager.html('');
 	    }
 	  },
 
@@ -231,6 +232,7 @@ $(document).ready(function() {
 			    	fragment = document.location.hash;
 			    	filename = filename,
 			    	$table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"></tr><tr class="property"></tr><tr class="annotation"></tr></thead><tbody></tbody></table>').appendTo($('#tables')),
+			    	$pager = $('<div class="container"><ul class="pager"></ul></div>').appendTo($('#tables')),
 			    	$filenameRow = $table.find('tr.filename'),
 			    	$propertyRow = $table.find('tr.property'),
 			    	match = [];
