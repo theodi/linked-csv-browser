@@ -148,16 +148,19 @@ $(document).ready(function() {
 	      $annotationHeaderRow = $table.find('thead tr.annotation');
 	    data.headers().each(function (index) {
 	      var
-	        $lastFilename = $filenameRow.find('th:last'),
+	        $lastFilename = $filenameRow.find('th:last span.filename'),
 	        $lastProperty = $propertyHeaderRow.find('th:last'),
 	        label = headerValue(this['@id'], data.meta());
 	      if (this['@id']) {
           if ($lastFilename.text() === filename) {
             // increase the colspan
-            $lastFilename.attr('colspan', parseInt($lastFilename.attr('colspan') || 1) + 1);
+            $lastFilename.parent().attr('colspan', parseInt($lastFilename.parent().attr('colspan') || 1) + 1);
           } else {
             // add a new filename header cell
-            $filenameRow.append('<th colspan="1">' + filename + '</th>');
+            $filenameRow.append('<th colspan="1">' +
+            		'<span class="filename">' + filename + '</span>' +
+            		' <a class="pull-right" href="' + data.baseUri() + '"><i class="icon icon-download-alt"></i></a>' +
+            	'</th>');
           }
           if (this.lang || this.type) {
             if ($lastFilename.text() === filename && $lastProperty.html() === label) {
@@ -186,15 +189,18 @@ $(document).ready(function() {
 	      $annotationHeaderRow = $table.find('thead tr.annotation');
 	    $.each(data.properties(), function (property, details) {
 	      var
-	        $lastFilename = $filenameRow.find('th:last'),
+	        $lastFilename = $filenameRow.find('th:last span.filename'),
 	        $lastProperty = $propertyHeaderRow.find('th:last'),
 	        label = headerValue(details[0]['@id'], data.meta());
 	      if ($lastFilename.text() === filename) {
 	        // increase the colspan
-	        $lastFilename.attr('colspan', parseInt($lastFilename.attr('colspan') || 1) + details.length);
+	        $lastFilename.parent().attr('colspan', parseInt($lastFilename.parent().attr('colspan') || 1) + details.length);
 	      } else {
 	        // add a new filename header cell
-	        $filenameRow.append('<th colspan="' + details.length + '">' + filename + '</th>');
+          $filenameRow.append('<th colspan="' + details.length + '">' +
+          		'<span class="filename">' + filename + '</span>' +
+          		' <a class="pull-right" href="' + data.baseUri() + '"><i class="icon icon-download-alt"></i></a>' +
+          	'</th>');
 	      }
 	      if (details.length === 1) {
 		      $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
@@ -237,7 +243,7 @@ $(document).ready(function() {
 			    	$propertyRow = $table.find('tr.property'),
 			    	match = [];
 			    if (data.header('$id')) {
-			    	$filenameRow.append('<th colspan="1">' + filename + '</th>');
+			    	$filenameRow.append('<th colspan="1"><span class="filename">' + filename + '</span> <a class="pull-right" href="' + url + '"><i class="icon icon-download-alt"></i></a></th>');
 			    	$propertyRow.append('<th rowspan="2"></th>');
 			    }
 			    addHeaders($table, filename, data);

@@ -323,6 +323,9 @@
 				}
 			});
 
+			linkedCSV.baseUri = function() {
+				return base;
+			};
 			linkedCSV.headers = function() {
 				return $(headers);
 			};
