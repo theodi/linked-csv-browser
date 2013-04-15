@@ -214,6 +214,10 @@ test("linked CSV with metadata", function() {
 					"rdfs:label": {
 						"en": "Name"
 					}
+				},
+				"rdfs:label": {
+					"@id": "rdfs:label",
+					"rdfs:label": "label"
 				}
 			})
 		}

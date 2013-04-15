@@ -181,6 +181,12 @@
 					if (!(id in metadata)) {
 						metadata[id] = entity;
 					}
+					if (prop && !(prop in metadata)) {
+						metadata[prop] = {
+							'@id': prop,
+							'rdfs:label': 'label'
+						}
+					}
 				} else {
 					$.each(row, function (header, value) {
 						var 
