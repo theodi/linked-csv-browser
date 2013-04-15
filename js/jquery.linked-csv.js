@@ -90,22 +90,18 @@
 
 			// process the header row
 			$.each(csv[0], function(header, value) {
-				var match, h = { name: header }, propertyArray = [];
+				var match, h = { name: header };
 				if (header !== '#') {
-					if (header !== '$id') {
+					if (header !== '$id' && header !== '') {
 						h['@id'] = $.uri.resolve('#' + header, base).toString()
+						if (h['@id'] in propertyIndex) {
+							propertyIndex[h['@id']].push(h);
+						} else {
+							propertyIndex[h['@id']] = [h];
+						}
 					}
 					headers.push(h);
 					headerIndex[header] = h;
-					if (header !== '$id') {
-						if (propertyIndex[h['@id']] === undefined) {
-							propertyArray.push(h);
-							propertyIndex[h['@id']] = propertyArray;
-						} else {
-							propertyArray = propertyIndex[h['@id']];
-							propertyArray.push(h);						
-						}
-					}
 				}
 				return true;
 			});
@@ -317,7 +313,14 @@
 
 			// create the array of properties from the propertyIndex
 			$.each(propertyIndex, function(id, prop) {
+				var names = $.map(prop, function (p) { return p.name; });
 				properties.push(prop);
+				if (!(id in metadata)) {
+					metadata[id] = {
+						'@id': id,
+						'rdfs:label': names.length > 1 ? names : names[0]
+					};
+				}
 			});
 
 			linkedCSV.headers = function() {

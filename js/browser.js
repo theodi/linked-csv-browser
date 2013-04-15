@@ -117,7 +117,7 @@ $(document).ready(function() {
 			          });
 			        }
 						});
-					} else if (typeof value === 'object') {
+					} else if (typeof value === 'object' && !('@id' in value)) {
 						$.each(headers, function (j, header) {
 							var cell = '<td>' + value[header.lang] + '</td>';
 							html += cell;

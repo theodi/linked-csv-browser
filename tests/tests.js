@@ -183,6 +183,16 @@ test("linked CSV with language columns", function() {
 					'fr': 'Andorre'
 				}
 			}, "it should pull out the three values for the name");
+			deepEqual(data.meta(), {
+				"http://example.org/data/countries#country": {
+					"@id": "http://example.org/data/countries#country",
+					"rdfs:label": "country"
+				},
+				"http://example.org/data/countries#name": {
+					"@id": "http://example.org/data/countries#name",
+					"rdfs:label": [ "english name", "french name" ]
+				}
+			}, "the metadata should default to including labels for each of the properties");
 		}
 	});
 });
@@ -219,7 +229,7 @@ test("linked CSV with metadata", function() {
 					"@id": "rdfs:label",
 					"rdfs:label": "label"
 				}
-			})
+			}, "the metadata should pick up the labels of the properties from the metadata");
 		}
 	});
 });
