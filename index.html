@@ -34,16 +34,36 @@
     </div>
     <div class="container">
       <h1>Linked CSV Browser <small>navigating tabular data</small></h1>
-      <form action="" method="get">
-        <p class="input-append">
-          <input id="load-url" name="url" class="input-xxlarge" type="url" placeholder="URL of Linked CSV" />
-          <button id="load-btn" class="btn" type="submit">Load</button>
-        </p>
-      </form>
+      <div class="row-fluid">
+        <form class="span8" action="" method="get">
+          <p class="input-append">
+            <input id="load-url" name="url" class="input-xxlarge" type="url" placeholder="URL of Linked CSV" />
+            <button id="load-btn" class="btn" type="submit">Load</button>
+          </p>
+        </form>
+        <ul class="span4 nav nav-pills">
+          <li class="active">
+            <a href="#tables" data-toggle="pill">Data</a>
+          </li>
+          <li>
+            <a href="#metadata" data-toggle="pill">Metadata</a>
+          </li>
+        </ul>
+      </div>
     </div>
     <div class="container-fluid">
       <hr />
-      <div id="tables">
+      <div class="tab-content">
+        <div class="tab-pane active" id="tables">
+        </div>
+        <div class="tab-pane" id="metadata">
+          <div class="tabbable tabs-right">
+            <ul class="nav nav-tabs">
+            </ul>
+            <div class="tab-content">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!--

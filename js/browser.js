@@ -223,6 +223,39 @@ $(document).ready(function() {
 	    });
 	    return $table;
 	  },
+
+	  addMetadata = function ($metadata, filename, data) {
+	  	var
+	  		$tabs = $metadata.find('ul.nav-tabs'),
+	  		$content = $metadata.find('div.tab-content'),
+	  		i = $tabs.find('li').length;
+	  	$tabs.append('<li' + (i === 0 ? ' class="active"' : '') + '><a href="#file' + i + '" data-toggle="tab">' + filename + '</a></li>');
+	  	$content.append('<div id="file' + i + '" class="tab-pane' + (i === 0 ? ' active' : '') + '">' +
+	  			'<h2>' + filename + '</h2>' +
+	  			'<div class="row-fluid">' +
+	  				'<div class="span4">' +
+	  					'<div class="well">' +
+	  						'<h3>Headers</h3>' +
+	  						'<ol class="unstyled">' +
+	  							data.headers().map(function (index) {
+	  								return '<li>' + this.name + (this.lang || this.type ? ' <span class="badge">' + (this.lang || this.type) + '</span>' : '') + '</li>';
+	  							}).get().join('') +
+	  						'</ol>' +
+	  					'</div>' +
+	  				'</div>' +
+	  			'</div>' +
+	  		'</div>');
+	    data.headers().each(function (index) {
+        if (this.see) {
+          $.each(this.see, function (filename, data) {
+          	if (data.headers !== undefined) {
+	            addMetadata($metadata, filename, data);
+          	}
+          });
+        }
+	    });
+	  },
+
 	  query = document.location.search,
 	  url = /^\?url=/.test(query) ? decodeURIComponent(query.substring(5)) : null,
 	  filename;
@@ -254,6 +287,7 @@ $(document).ready(function() {
 			    	document.location.hash = '#row=0-50';
 			    	addRows($table, data, 0, 50);
 			    }
+			    addMetadata($('#metadata'), filename, data);
 			    window.onhashchange = function (event) {
 			    	var match = fragidRegex.exec(document.location.hash);
 			    	if (match) {
