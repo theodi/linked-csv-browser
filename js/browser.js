@@ -117,6 +117,12 @@ $(document).ready(function() {
 			          });
 			        }
 						});
+					} else if (typeof value === 'object') {
+						$.each(headers, function (j, header) {
+							var cell = '<td>' + value[header.lang] + '</td>';
+							html += cell;
+							$row.append(cell);
+						});
 					} else {
 						cell = '<td>' + tableValue(value, false) + '</td>';
 						html += cell;

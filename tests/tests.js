@@ -178,16 +178,10 @@ test("linked CSV with language columns", function() {
 			deepEqual(data.entities().get(0), {
 				'@id': 'http://en.wikipedia.org/wiki/Andorra',
 				'http://example.org/data/countries#country': 'AD',
-				'http://example.org/data/countries#name': [{
-					'@lang': 'en',
-					'@value': 'Andorra'
-				}, {
-					'@lang': 'fr',
-					'@value': 'Andorre'
-				}, {
-					'@lang': 'en',
-					'@value': 'Principality of Andorra'
-				}]
+				'http://example.org/data/countries#name': {
+					'en': [ 'Andorra', 'Principality of Andorra'],
+					'fr': 'Andorre'
+				}
 			}, "it should pull out the three values for the name");
 		}
 	});
@@ -198,8 +192,8 @@ test("linked CSV with metadata", function() {
 		data: "#,$id,country,english name,french name,\r\n" +
 "lang,,,en,fr,\r\n" +
 "url,,,#name,#name,\r\n" +
-"meta,#country,label,en,Country,rdfs:label\r\n" +
-"meta,#name,label,en,Name,rdfs:label\r\n" +
+"meta,#country,label,Country,en,rdfs:label\r\n" +
+"meta,#name,label,Name,en,rdfs:label\r\n" +
 ",http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre,\r\n" +
 ",http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,,\r\n" +
 ",http://en.wikipedia.org/wiki/Afghanistan,AF,Afghanistan,Afghanistan,\r\n" +

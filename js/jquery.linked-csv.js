@@ -132,20 +132,20 @@
 						label = triple[0]
 						value = triple[1];
 					} else {
-						if (triple[1] in ['string', 'url', 'integer', 'decimal', 'double', 'boolean', 'time']) {
+						if (triple[2] in ['string', 'url', 'integer', 'decimal', 'double', 'boolean', 'time']) {
 							label = triple[0];
-							type = triple[1];
-							value = triple[2];
+							value = triple[1];
+							type = triple[2];
 							prop = triple[3] ? parseProp(triple[3]) : undefined;
-						} else if (/^[a-z]{2}$/.test(triple[1])) {
+						} else if (/^[a-z]{2}$/.test(triple[2])) {
 							label = triple[0];
-							lang = triple[1];
-							value = triple[2];
+							value = triple[1];
+							lang = triple[2];
 							prop = triple[3] ? parseProp(triple[3]) : undefined;
 						} else if (triple.length === 4) {
 							label = triple[0];
-							type = parseProp(triple[1], true);
-							value = triple[2];
+							value = triple[1];
+							type = parseProp(triple[2], true);
 							prop = triple[3] ? parseProp(triple[3]) : undefined;
 						} else {
 							value = triple[1];
@@ -232,14 +232,31 @@
 							val = parseValue(value, map.type, map.lang);
 							if (val !== '') {
 								r[header] = val;
-								if (entity[prop]) {
-									if ($.isArray(entity[prop])) {
-										entity[prop].push(val);
+								if (map.lang === undefined) {
+									if (prop in entity) {
+										if ($.isArray(entity[prop])) {
+											entity[prop].push(val);
+										} else {
+											entity[prop] = [entity[prop], val];
+										}
 									} else {
-										entity[prop] = [entity[prop], val];
+										entity[prop] = val;
 									}
 								} else {
-									entity[prop] = val;
+									if (prop in entity) {
+										if (map.lang in entity[prop]) {
+											if ($.isArray(entity[prop][map.lang])) {
+												entity[prop][map.lang].push(value);
+											} else {
+												entity[prop][map.lang] = [entity[prop][map.lang], value];
+											}
+										} else {
+											entity[prop][map.lang] = value;
+										}
+									} else {
+										entity[prop] = {};
+										entity[prop][map.lang] = value;
+									}
 								}
 							}
 						}
@@ -263,6 +280,25 @@
 									} else {
 										entityIndex[id][prop].push(entity[prop]);
 									}
+								} else if (typeof current === 'object') {
+									$.each(entity[prop], function (lang, value) {
+										if (lang in entityIndex[id][prop]) {
+											if ($.isArray(entityIndex[id][prop][lang])) {
+												if ($.isArray(entity[prop][lang])) {
+													entityIndex[id][prop][lang] = entityIndex[id][prop][lang].concat(entity[prop][lang]);
+												} else {
+													entityIndex[id][prop][lang].push(entity[prop][lang]);
+												}
+											} else if ($.isArray(entity[prop][lang])) {
+												entityIndex[id][prop][lang] = [entityIndex[id][prop][lang]];
+												entityIndex[id][prop][lang] = entityIndex[id][prop][lang].concat(entity[prop][lang]);
+											} else {
+												entityIndex[id][prop][lang] = [entityIndex[id][prop][lang], entity[prop][lang]];
+											}
+										} else {
+											entityIndex[id][prop][lang] = entity[prop][lang];
+										}
+									});
 								} else if (current !== entity[prop]) {
 									entityIndex[id][prop] = [current, entity[prop]];
 								}
