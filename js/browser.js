@@ -228,19 +228,61 @@ $(document).ready(function() {
 	  	var
 	  		$tabs = $metadata.find('ul.nav-tabs'),
 	  		$content = $metadata.find('div.tab-content'),
-	  		i = $tabs.find('li').length;
+	  		i = $tabs.find('li').length,
+	  		metadata = data.meta()[data.baseUri()] || {},
+	  		title = metadata['dct:title'] || metadata['dc:title'] || metadata['rdfs:label'],
+	  		desc = metadata['dct:description'] || metadata['dc:description'] || metadata['rdfs:comment'];
+	  	title = typeof title === 'object' ? title['en'] : title;
+	  	desc = typeof desc === 'object' ? desc['en'] : desc;
+	  	console.log(metadata);
+	  	console.log(title);
+	  	console.log(desc);
 	  	$tabs.append('<li' + (i === 0 ? ' class="active"' : '') + '><a href="#file' + i + '" data-toggle="tab">' + filename + '</a></li>');
 	  	$content.append('<div id="file' + i + '" class="tab-pane' + (i === 0 ? ' active' : '') + '">' +
-	  			'<h2>' + filename + '</h2>' +
 	  			'<div class="row-fluid">' +
-	  				'<div class="span4">' +
+	  				'<div class="span6">' +
+			  			'<div class="page-header">' +
+			  				'<h2>' + (title ? title + ' <small>' + filename + '</small>' : filename) + '</h2>' +
+			  			'</div>' +
+	  					(desc ? '<p>' + desc + '</p>' : '') +
+	  				'</div>' +
+	  				'<div class="span6">' +
 	  					'<div class="well">' +
-	  						'<h3>Headers</h3>' +
-	  						'<ol class="unstyled">' +
-	  							data.headers().map(function (index) {
-	  								return '<li>' + this.name + (this.lang || this.type ? ' <span class="badge">' + (this.lang || this.type) + '</span>' : '') + '</li>';
-	  							}).get().join('') +
-	  						'</ol>' +
+	  						'<h3>Statistics</h3>' +
+  							'<div class="row-fluid">' +
+  								'<p class="span6">' +
+  									'<span class="badge">' + data.rows().length + '</span> rows' +
+  								'</p>' + 
+  								'<p class="span6">' +
+  									'<span class="badge">' + data.entities().length + '</span> entities' +
+  								'</p>' + 
+  							'</div>' +
+  							'<div class="row-fluid">' +
+  								'<div class="span6">' +
+  									'<h4>Headers</h4>' +
+			  						'<ol class="unstyled">' +
+			  							data.headers().map(function (index) {
+			  								return '<li><code>' + this.name + '</code>' + ((this.lang || this.type) ? (' <span class="badge">' + (this.lang || this.type) + '</span>') : '') + '</li>';
+			  							}).get().join('') +
+			  						'</ol>' +
+			  					'</div>' +
+  								'<div class="span6">' +
+  									'<h4>Properties</h4>' +
+			  						'<ol class="unstyled">' +
+			  							data.properties().map(function (index) {
+			  								var annotations = [];
+			  								$.each(this, function(i, header) {
+			  									if (header.lang && !(header.lang in annotations)) {
+			  										annotations.push(header.lang);
+			  									} else if (header.type && !(header.type in annotations)) {
+			  										annotations.push(header.type);
+			  									}
+			  								});
+			  								return '<li><a href="' + this[0]['@id'] + '"><code>' + this[0].name + '</code></a>' + (annotations.length > 0 ? $.map(annotations, function (annotation) { return ' <span class="badge">' + annotation + '</span>'; }).join('') : '') + '</li>';
+			  							}).get().join('') +
+			  						'</ol>' +
+			  					'</div>' +
+		  					'</div>' +
 	  					'</div>' +
 	  				'</div>' +
 	  			'</div>' +
@@ -279,7 +321,11 @@ $(document).ready(function() {
 			    	$filenameRow.append('<th colspan="1"><span class="filename">' + filename + '</span> <a class="pull-right" href="' + url + '"><i class="icon icon-download-alt"></i></a></th>');
 			    	$propertyRow.append('<th rowspan="2"></th>');
 			    }
+			    addMetadata($('#metadata'), filename, data);
 			    addHeaders($table, filename, data);
+			    if (fragment.substring(0,6) === '#meta=') {
+			    	$('.nav-pills a[href=#metadata]').tab('show');
+			    }
 			    if (fragidRegex.test(fragment)) {
 			    	match = fragidRegex.exec(fragment);
 				    addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
@@ -287,10 +333,13 @@ $(document).ready(function() {
 			    	document.location.hash = '#row=0-50';
 			    	addRows($table, data, 0, 50);
 			    }
-			    addMetadata($('#metadata'), filename, data);
 			    window.onhashchange = function (event) {
-			    	var match = fragidRegex.exec(document.location.hash);
-			    	if (match) {
+			    	var 
+			    		fragid = document.location.hash,
+			    		match = fragidRegex.exec(fragid);
+			    	if (fragid.substring(0,6) === '#meta=') {
+			    		$('.nav-pills a[href=#metadata]').tab('show');
+			    	} else if (match) {
 				    	$table.find('tbody').html('');
 				    	addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
 			    	}
