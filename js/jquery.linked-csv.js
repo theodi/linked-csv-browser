@@ -91,8 +91,8 @@
 				},
 				parseFragment = function(url) {
 					var fragid;
-					if (url.substring(0,base.length) === base) {
-						fragid = url.substring(base.length + 1);
+					if (url.substring(0,base.toString().length) === base.toString()) {
+						fragid = url.substring(base.toString().length + 1);
 						fragid = fragid.split('=');
 						fragid[1] = fragid[0] === 'cell' ? fragid[1].split(',') : fragid[1];
 						return fragid;

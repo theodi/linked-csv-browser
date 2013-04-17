@@ -234,9 +234,6 @@ $(document).ready(function() {
 	  		desc = metadata['dct:description'] || metadata['dc:description'] || metadata['rdfs:comment'];
 	  	title = typeof title === 'object' ? title['en'] : title;
 	  	desc = typeof desc === 'object' ? desc['en'] : desc;
-	  	console.log(metadata);
-	  	console.log(title);
-	  	console.log(desc);
 	  	$tabs.append('<li' + (i === 0 ? ' class="active"' : '') + '><a href="#file' + i + '" data-toggle="tab">' + filename + '</a></li>');
 	  	$content.append('<div id="file' + i + '" class="tab-pane' + (i === 0 ? ' active' : '') + '">' +
 	  			'<div class="row-fluid">' +
