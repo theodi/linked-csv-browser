@@ -204,10 +204,13 @@ test("linked CSV with metadata", function() {
 "url,,,#name,#name,\r\n" +
 "meta,#country,label,Country,en,rdfs:label\r\n" +
 "meta,#name,label,Name,en,rdfs:label\r\n" +
+"meta,#col=5,note,dummy column,en,rdfs:comment\r\n" +
 ",http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre,\r\n" +
 ",http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,,\r\n" +
 ",http://en.wikipedia.org/wiki/Afghanistan,AF,Afghanistan,Afghanistan,\r\n" +
-",http://en.wikipedia.org/wiki/Afghanistan,,Islamic Republic of Afghanistan,,", 
+",http://en.wikipedia.org/wiki/Afghanistan,,Islamic Republic of Afghanistan,,\r\n" +
+"meta,#row=6,note,first data row,en,rdfs:comment\r\n" +
+"meta,\"#cell=6,1\",note,first data cell,en,rdfs:comment",
 		base: 'http://example.org/data/countries',
 		success: function (data) {
 			ok(data, "we get some data from the CSV");
@@ -228,8 +231,48 @@ test("linked CSV with metadata", function() {
 				"rdfs:label": {
 					"@id": "rdfs:label",
 					"rdfs:label": "label"
+				},
+				"http://example.org/data/countries#col=5": {
+					"@id": "http://example.org/data/countries#col=5",
+					"rdfs:comment": {
+						"en": "dummy column"
+					}
+				},
+				"http://example.org/data/countries#row=6": {
+					"@id": "http://example.org/data/countries#row=6",
+					"rdfs:comment": {
+						"en": "first data row"
+					}
+				},
+				"http://example.org/data/countries#cell=6,1": {
+					"@id": "http://example.org/data/countries#cell=6,1",
+					"rdfs:comment": {
+						"en": "first data cell"
+					}
+				},
+				"rdfs:comment": {
+					"@id": "rdfs:comment",
+					"rdfs:label": "note"
 				}
 			}, "the metadata should pick up the labels of the properties from the metadata");
+			deepEqual(data.colMeta()[5], {
+				"@id": "http://example.org/data/countries#col=5",
+				"rdfs:comment": {
+					"en": "dummy column"
+				}
+			}, "the metadata about the column should be available");
+			deepEqual(data.rowMeta()[6], {
+				"@id": "http://example.org/data/countries#row=6",
+				"rdfs:comment": {
+					"en": "first data row"
+				}
+			}, "the metadata about the row should be available");
+			deepEqual(data.cellMeta()[6][1], {
+				"@id": "http://example.org/data/countries#cell=6,1",
+				"rdfs:comment": {
+					"en": "first data cell"
+				}
+			}, "the metadata about the cell should be available");
 		}
 	});
 });

@@ -33,6 +33,9 @@
 				entityIndex = {},
 				propertyIndex = {},
 				metadata = {},
+				rowMeta = [],
+				colMeta = [],
+				cellMeta = [],
 				parseProp = function(prop, expand) {
 					var match;
 					if (prefixRegex.test(prop)) {
@@ -85,6 +88,17 @@
 						val = parseInt(value);
 					}
 					return val;
+				},
+				parseFragment = function(url) {
+					var fragid;
+					if (url.substring(0,base.length) === base) {
+						fragid = url.substring(base.length + 1);
+						fragid = fragid.split('=');
+						fragid[1] = fragid[0] === 'cell' ? fragid[1].split(',') : fragid[1];
+						return fragid;
+					} else {
+						return null;
+					}
 				};
 			csv = $.csv.toObjects(data.replace(/\r([^\n])/g, '\r\n$1'));
 
@@ -114,11 +128,12 @@
 					r = id === null ? {} : {'$id': id.toString()},
 					meta = row['#'],
 					triple = [],
-					label, type, lang, value, prop;
+					label, type, lang, value, prop, fragment;
 				if (meta === 'meta') {
 					id = id === null ? base : id;
 					entity = metadata[id] || entity;
 					entity['@id'] = id.toString();
+					fragment = parseFragment(entity['@id']);
 					$.each(row, function(header, value) {
 						if (header !== '#' && header !== '$id') {
 							triple.push(value);
@@ -180,7 +195,19 @@
 					if (prop && !(prop in metadata)) {
 						metadata[prop] = {
 							'@id': prop,
-							'rdfs:label': 'label'
+							'rdfs:label': label
+						}
+					}
+					if (fragment) {
+						if (fragment[0] === 'row') {
+							rowMeta[parseInt(fragment[1])] = entity;
+						} else if (fragment[0] === 'col') {
+							colMeta[parseInt(fragment[1])] = entity;
+						} else if (fragment[0] === 'cell') {
+							if (cellMeta[parseInt(fragment[1][0])] === undefined) {
+								cellMeta[parseInt(fragment[1][0])] = [];
+							}
+							cellMeta[parseInt(fragment[1][0])][parseInt(fragment[1][1])] = entity;
 						}
 					}
 				} else {
@@ -346,6 +373,15 @@
 			};
 			linkedCSV.meta = function() {
 				return metadata;
+			};
+			linkedCSV.rowMeta = function () {
+				return rowMeta;
+			};
+			linkedCSV.colMeta = function () {
+				return colMeta;
+			};
+			linkedCSV.cellMeta = function () {
+				return cellMeta;
 			};
 			return linkedCSV;
 		};
