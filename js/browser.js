@@ -54,7 +54,7 @@ $(document).ready(function() {
 	    	rows = data.rows();
 	    rows.slice(start, end).each(function (index) {
 	      var 
-	        $idCell = linkCell(this['$id']),
+	        $idCell = linkCell(this['$id']) || (data.headers('$id') ? '<td>&nbsp;</td>' : ''),
 	        $row = $('<tr></tr>').append($idCell).appendTo($body);
 	      addCells($row, this, data);
 	    });
