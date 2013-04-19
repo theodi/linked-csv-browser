@@ -108,7 +108,7 @@
 				var match, h = { name: header, '@index': index };
 				if (header !== '#') {
 					if (header !== '$id' && header !== '') {
-						h['@id'] = $.uri.resolve('#' + header, base).toString()
+						h['@id'] = $.uri.resolve('#' + encodeURIComponent(header), base).toString()
 						if (h['@id'] in propertyIndex) {
 							propertyIndex[h['@id']].push(h);
 						} else {
@@ -132,7 +132,7 @@
 					triple = [],
 					label, type, lang, value, prop, fragment;
 				if (meta === 'meta') {
-					id = id === null ? base : id;
+					id = id === null ? base : parseProp(id);
 					entity = metadata[id] || entity;
 					entity['@id'] = id.toString();
 					fragment = parseFragment(entity['@id']);
@@ -166,7 +166,7 @@
 						}
 					}
 					if (prop === undefined) {
-						prop = parseProp('#' + label);
+						prop = parseProp('#' + encodeURIComponent(label));
 					}
 					if (lang === undefined) {
 						value = parseValue(value, type, lang);
@@ -221,7 +221,7 @@
 							prop = map !== undefined ? map['@id'] : undefined;
 						if (meta === 'url') {
 							if (header !== '#' && value !== '') {
-								val = $.uri.resolve(value, base).toString();
+								val = parseProp(value, base);
 								if (val !== prop) {
 									map['@id'] = val;
 									if (propertyIndex[val] === undefined) {

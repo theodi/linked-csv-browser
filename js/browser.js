@@ -312,7 +312,7 @@ $(document).ready(function() {
 			  										annotations.push(header.type);
 			  									}
 			  								});
-			  								return '<li><a href="' + this[0]['@id'] + '"><code>' + this[0].name + '</code></a>' + (annotations.length > 0 ? $.map(annotations, function (annotation) { return ' <span class="badge">' + annotation + '</span>'; }).join('') : '') + '</li>';
+			  								return '<li>' + headerValue(this[0]['@id'], data.meta()) + (annotations.length > 0 ? $.map(annotations, function (annotation) { return ' <span class="badge">' + annotation + '</span>'; }).join('') : '') + '</li>';
 			  							}).get().join('') +
 			  						'</ol>' +
 			  					'</div>' +
