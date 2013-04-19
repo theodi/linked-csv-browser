@@ -25,16 +25,19 @@ test("linked CSV with only x0D line endings column", function() {
 			ok(data, "we get some data from the CSV");
 			equal(data.rows().length, 4, "there should be four rows");
 			deepEqual(data.rows().get(0), {
+				'@index': 0,
 				'$id': 'http://example.org/data/countries#AD',
 				'country': 'AD',
 				'name': 'Andorra'
 			})
 			deepEqual(data.properties().get(0), [{
 					'@id': 'http://example.org/data/countries#country',
+					'@index': 1,
 					'name': 'country'
 				}], "the properties() method should return information about the properties");
 			deepEqual(data.properties().get(1), [{
 					'@id': 'http://example.org/data/countries#name',
+					'@index': 2,
 					'name': 'name'
 				}], "the properties() method should return information about the properties");
 			equal(data.entities().length, 2, "there should be two entities");
@@ -58,16 +61,19 @@ test("linked CSV with $id column", function() {
 			ok(data, "we get some data from the CSV");
 			equal(data.rows().length, 4, "there should be four rows");
 			deepEqual(data.rows().get(0), {
+				'@index': 0,
 				'$id': 'http://example.org/data/countries#AD',
 				'country': 'AD',
 				'name': 'Andorra'
 			})
 			deepEqual(data.properties().get(0), [{
 					'@id': 'http://example.org/data/countries#country',
+					'@index': 1,
 					'name': 'country'
 				}], "the properties() method should return information about the properties");
 			deepEqual(data.properties().get(1), [{
 					'@id': 'http://example.org/data/countries#name',
+					'@index': 2,
 					'name': 'name'
 				}], "the properties() method should return information about the properties");
 			equal(data.entities().length, 2, "there should be two entities");
@@ -93,30 +99,36 @@ test("linked CSV with datatyped columns", function() {
 			equal(data.rows().length, 4, "there should be four rows");
 			deepEqual(data.headers().get(0), {
 					'@id': 'http://example.org/data/af-populations#country',
+					'@index': 1,
 					'name': 'country',
 					'type': 'url'
 				}, "the first header should be the country header");
 			deepEqual(data.headers().get(1), {
 					'@id': 'http://example.org/data/af-populations#year',
+					'@index': 2,
 					'name': 'year',
 					'type': 'time'
 				}, "the second header should be the year header");
 			deepEqual(data.headers().get(2), {
 					'@id': 'http://example.org/data/af-populations#population',
+					'@index': 3,
 					'name': 'population'
 				}, "the final header should be the population header");
 			deepEqual(data.properties().get(0), [{
 					'@id': 'http://example.org/data/af-populations#country',
+					'@index': 1,
 					'name': 'country',
 					'type': 'url'
 				}], "the first property should be the country");
 			deepEqual(data.properties().get(1), [{
 					'@id': 'http://example.org/data/af-populations#year',
+					'@index': 2,
 					'name': 'year',
 					'type': 'time'
 				}], "the second property should be the year");
 			deepEqual(data.properties().get(2), [{
 					'@id': 'http://example.org/data/af-populations#population',
+					'@index': 3,
 					'name': 'population'
 				}], "the third property should be the population");
 			equal(data.entities().length, 4, "there should be four entities");
@@ -145,32 +157,39 @@ test("linked CSV with language columns", function() {
 			ok(data, "we get some data from the CSV");
 			equal(data.rows().length, 4, "there should be four rows");
 			deepEqual(data.headers().get(0), {
+					'@index': 1,
 					"name": "$id"
 				}, "the first header should be the $id column");
 			deepEqual(data.headers().get(1), {
 					"@id": "http://example.org/data/countries#country",
+					'@index': 2,
 					"name": "country"
 				}, "the second header should be the country column");
 			deepEqual(data.headers().get(2), {
 					"@id": "http://example.org/data/countries#name",
+					'@index': 3,
 					"name": "english name",
 					"lang": "en"
 				}, "the third header should be the english name column");
 			deepEqual(data.headers().get(3), {
 					"@id": "http://example.org/data/countries#name",
+					'@index': 4,
 					"name": "french name",
 					"lang": "fr"
 				}, "the final header should be the french name column");
 			deepEqual(data.properties().get(0), [{
 					"@id": "http://example.org/data/countries#country",
+					'@index': 2,
 					"name": "country"
 				}], "the first property should be the country");
 			deepEqual(data.properties().get(1), [{
 					"@id": "http://example.org/data/countries#name",
+					'@index': 3,
 					"name": "english name",
 					"lang": "en"
 				},{
 					"@id": "http://example.org/data/countries#name",
+					'@index': 4,
 					"name": "french name",
 					"lang": "fr"
 				}], "the second property should be the name");

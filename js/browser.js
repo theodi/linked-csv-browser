@@ -7,17 +7,21 @@ $(document).ready(function() {
 	    return id ? $('<td><a href="' + id + '"><i class="icon-share"></i></a></td>') : null;
 	  },
 
-	  headerValue = function (value, meta) {
+	  headerLabel = function (value, meta) {
 	  	var v;
 	  	if (value in meta && 'rdfs:label' in meta[value]) {
 	  		v = meta[value]['rdfs:label'];
 	  		if ($.isArray(v)) v = v[0];
 	  		if (typeof v === 'object') v = v['en'];
-	  		return '<a href="' + value + '">' + v + '</a>';
+	  		return v;
 	  	} else {
 	  		v = urlRegex.exec(value);
-	  		return v ? '<a href="' + value + '">' + (v[2] || v[3]) + '</a>' : value;
+	  		return v ? (v[2] || v[3]) : value;
 	  	}
+	  },
+
+	  headerValue = function (value, meta) {
+	  	return '<a href="' + value + '">' + headerLabel(value, meta) + '</a>';
 	  },
 
 	  tableValue = function (value, includeBadge) {
@@ -40,9 +44,29 @@ $(document).ready(function() {
 	        v += '&nbsp;<span class="badge">' + value['@lang'] + '</span>';
 	      }
 	      return v;
+	    } else if (typeof value === 'object') {
+	    	v = '<ul class="unstyled">';
+	    	for (lang in value) {
+	    		v += '<li><span class="badge">' + lang + '</span> ' + value[lang] + '</li>';
+	    	}
+	    	v += '</ul>';
+	    	return v;
 	    } else {
 	      return v.toString().replace(/\s+/, '&nbsp;');
 	    }
+	  },
+
+	  formatMetadata = function(metadata, data) {
+	  	var formatted = '';
+	  	formatted += '<dl>';
+	  	for (prop in metadata) {
+	  		if (prop !== '@id') {
+		  		formatted += '<dt>' + headerValue(prop, data.meta()) + '</dt>';
+		  		formatted += '<dd>' + tableValue(metadata[prop], true) + '</dd>';
+	  		}
+	  	}
+	  	formatted += '</dl>';
+	  	return formatted.replace(/&/g, '&amp;').replace(/\</g, '&lt;').replace(/"/g, '&quot;');
 	  },
 
 	  addRows = function($table, data, start, end) {
@@ -51,11 +75,13 @@ $(document).ready(function() {
 	    	$pager = $table.parent().find('.pager'),
 	    	pager = '',
 	    	colspan = 1,
-	    	rows = data.rows();
+	    	rows = data.rows(),
+	    	rowMeta = data.rowMeta();
 	    rows.slice(start, end).each(function (index) {
 	      var 
-	        $idCell = linkCell(this['$id']) || (data.headers('$id') ? '<td>&nbsp;</td>' : ''),
-	        $row = $('<tr></tr>').append($idCell).appendTo($body);
+	        idCell = linkCell(this['$id']) || (data.headers('$id') ? '<td>&nbsp;</td>' : ''),
+	        metadataCell = rowMeta.length > 0 ? '<td' + (rowMeta[this['@index']] ? ' class="metadata"><i class="icon icon-pencil" data-content="' + formatMetadata(rowMeta[this['@index']], data) + '" data-placement="right"></i>' : '>&nbsp;') + '</td>' : '',
+	        $row = $('<tr></tr>').append(metadataCell).append(idCell).appendTo($body);
 	      addCells($row, this, data);
 	    });
 	    if (start > 0 || end < rows.length) {
@@ -145,12 +171,14 @@ $(document).ready(function() {
 	    var
 	      $filenameRow = $table.find('thead tr.filename'),
 	      $propertyHeaderRow = $table.find('thead tr.property'),
-	      $annotationHeaderRow = $table.find('thead tr.annotation');
+	      $annotationHeaderRow = $table.find('thead tr.annotation'),
+	      $metadataHeaderRow = $table.find('thead tr.metadata');
 	    data.headers().each(function (index) {
 	      var
 	        $lastFilename = $filenameRow.find('th:last span.filename'),
 	        $lastProperty = $propertyHeaderRow.find('th:last'),
-	        label = headerValue(this['@id'], data.meta());
+	        label = headerValue(this['@id'], data.meta()),
+	        metadata = data.colMeta()[this['@index']];
 	      if (this['@id']) {
           if ($lastFilename.text() === filename) {
             // increase the colspan
@@ -172,6 +200,11 @@ $(document).ready(function() {
           } else {
             $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
           }
+          if (metadata) {
+          	$metadataHeaderRow.append('<td class="metadata"><i class="icon icon-pencil" data-content="' + formatMetadata(metadata, data) + '" data-placement="bottom"></i></td>');
+          } else {
+          	$metadataHeaderRow.append('<td>&nbsp;</td>');
+          }
 	        if (this.see) {
 	          $.each(this.see, function (filename, data) {
 	            addPropertyHeaders($table, filename, data);
@@ -186,7 +219,9 @@ $(document).ready(function() {
 	    var
 	      $filenameRow = $table.find('thead tr.filename'),
 	      $propertyHeaderRow = $table.find('thead tr.property'),
-	      $annotationHeaderRow = $table.find('thead tr.annotation');
+	      $annotationHeaderRow = $table.find('thead tr.annotation'),
+	      $metadataHeaderRow = $table.find('thead tr.metadata'),
+	      metadata = data.colMeta();
 	    $.each(data.properties(), function (property, details) {
 	      var
 	        $lastFilename = $filenameRow.find('th:last span.filename'),
@@ -204,6 +239,7 @@ $(document).ready(function() {
 	      }
 	      if (details.length === 1) {
 		      $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
+		      $metadataHeaderRow.append('<td class="metadata">' + (metadata[details[0]['@index']] ? '<i class="icon icon-pencil" data-content="' + formatMetadata(metadata[details[0]['@index']], data) + '" data-placement="bottom"></i>' : '&nbsp;') + '</td>');
 	        if (details[0].see) {
 	          $.each(details[0].see, function (filename, data) {
 	            addPropertyHeaders($table, filename, data);
@@ -213,6 +249,7 @@ $(document).ready(function() {
 		      $propertyHeaderRow.append('<th colspan="' + details.length + '">' + label + '</th>');
 		      $.each(details, function(index, property) {
 	            $annotationHeaderRow.append('<th><span class="badge">' + (property.lang || property.type) + '</span></th>');
+				      $metadataHeaderRow.append('<td>' + (metadata[property['@index']] ? '<i class="icon icon-pencil" data-content="' + formatMetadata(metadata[property['@index']], data) + '" data-placement="bottom"></i>' : '&nbsp;') + '</td>');
 			        if (property.see) {
 			          $.each(property.see, function (filename, data) {
 			            addPropertyHeaders($table, filename, data);
@@ -309,14 +346,19 @@ $(document).ready(function() {
 			    var 
 			    	fragment = document.location.hash;
 			    	filename = filename,
-			    	$table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"></tr><tr class="property"></tr><tr class="annotation"></tr></thead><tbody></tbody></table>').appendTo($('#tables')),
+			    	colMeta = data.colMeta(),
+			    	rowMeta = data.rowMeta(),
+			    	$table = $('<table class="table table-condensed table-striped table-hover table-bordered"><thead><tr class="filename"></tr><tr class="property"></tr><tr class="annotation"></tr>' + (colMeta.length > 0 ? '<tr class="metadata"></tr>' : '') + '</thead><tbody></tbody></table>').appendTo($('#tables')),
 			    	$pager = $('<div class="container"><ul class="pager"></ul></div>').appendTo($('#tables')),
 			    	$filenameRow = $table.find('tr.filename'),
 			    	$propertyRow = $table.find('tr.property'),
 			    	match = [];
 			    if (data.header('$id')) {
+			    	$filenameRow.append('<th colspan="' + (rowMeta.length > 0 ? '2' : '1') + '"><span class="filename">' + filename + '</span> <a class="pull-right" href="' + url + '"><i class="icon icon-download-alt"></i></a></th>');
+			    	$propertyRow.append('<th rowspan="' + (colMeta.length > 0 ? '3' : '2') + '"' + (rowMeta.length > 0 ? ' colspan="2"' : '') + '></th>');
+			    } else if (rowMeta.length > 0) {
 			    	$filenameRow.append('<th colspan="1"><span class="filename">' + filename + '</span> <a class="pull-right" href="' + url + '"><i class="icon icon-download-alt"></i></a></th>');
-			    	$propertyRow.append('<th rowspan="2"></th>');
+			    	$propertyRow.append('<th rowspan="' + (colMeta.length > 0 ? '3' : '2') + '"></th>');
 			    }
 			    addMetadata($('#metadata'), filename, data);
 			    addHeaders($table, filename, data);
@@ -341,7 +383,9 @@ $(document).ready(function() {
 				    	addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
 			    	}
 			    };
+					$('td.metadata i').popover({ title: 'Notes', html: true });
 			  }
 			});
+
 		}
 })

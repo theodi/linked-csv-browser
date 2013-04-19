@@ -24,6 +24,7 @@
 				row = {},
 				entity = {},
 				prop = '',
+				index = 0,
 				csv = [],
 				properties = [],
 				entities = [],
@@ -104,7 +105,7 @@
 
 			// process the header row
 			$.each(csv[0], function(header, value) {
-				var match, h = { name: header };
+				var match, h = { name: header, '@index': index };
 				if (header !== '#') {
 					if (header !== '$id' && header !== '') {
 						h['@id'] = $.uri.resolve('#' + header, base).toString()
@@ -117,6 +118,7 @@
 					headers.push(h);
 					headerIndex[header] = h;
 				}
+				index++;
 				return true;
 			});
 
@@ -125,7 +127,7 @@
 				var
 					id = row['$id'] ? $.uri(row['$id'], base) : null,
 					entity = id === null ? {} : {'@id': id.toString()},
-					r = id === null ? {} : {'$id': id.toString()},
+					r = id === null ? { '@index': index } : {'$id': id.toString(), '@index': index},
 					meta = row['#'],
 					triple = [],
 					label, type, lang, value, prop, fragment;
