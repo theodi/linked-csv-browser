@@ -370,7 +370,8 @@ $(document).ready(function() {
   	$('#load-url').val(url);
   	$.linkedCSV({
 			  url: url, 
-			  base: $.uri.base(),
+			  base: url,
+
 			  success: function(data) {
 			    var 
 			    	fragment = document.location.hash;
@@ -382,7 +383,7 @@ $(document).ready(function() {
 			    	$filenameRow = $table.find('tr.filename'),
 			    	$propertyRow = $table.find('tr.property'),
 			    	match = [];
-			    $('#status .alert-error').hide();
+			    $('#status').hide();
 			    if (data.header('$id')) {
 			    	$filenameRow.append('<th colspan="' + (rowMeta.length > 0 ? '2' : '1') + '"><span class="filename">' + filename + '</span> <a class="pull-right" href="' + url + '"><i class="icon icon-download-alt"></i></a></th>');
 			    	$propertyRow.append('<th rowspan="' + (colMeta.length > 0 ? '3' : '2') + '"' + (rowMeta.length > 0 ? ' colspan="2"' : '') + '></th>');
@@ -415,9 +416,36 @@ $(document).ready(function() {
 			    };
 					$('td.metadata i, i.annotation').popover({ title: 'Notes', html: true, trigger: 'hover' });
 			  },
+
 			  failure: function (error) {
+			  	$('#progress').hide();
 			  	$('#load-error').show();
+			  },
+
+			  progress: function (filename, state) {
+			  	var 
+			  		file = 	urlRegex.exec(filename)[3],
+			  		$dd = $('#progress dt:contains(' + file + ')').next('dd:first');
+			  	if ($dd.length >= 1) {
+			  		if (state === 'error') {
+			  			$dd
+			  				.addClass('text-error')
+			  				.text('not found');
+			  		} else if (state === 'complete') {
+				  		$dd
+				  			.addClass('text-success')
+				  			.text('loaded');
+			  		} else {
+			  			$dd.text(state + '...');
+			  		}
+			  	} else {
+			  		$('#progress').append(
+			  			'<dt>' + file + '</dt>' +
+			  			'<dd>' + state + '...</dd>'
+			  		)
+			  	}
 			  }
+
 			});
 
 		}

@@ -101,9 +101,11 @@
 						return null;
 					}
 				};
+			linkedCSV.progress(base, 'parsing CSV');
 			csv = $.csv.toObjects(data.replace(/\r([^\n])/g, '\r\n$1'));
 
 			// process the header row
+			linkedCSV.progress(base, 'parsing headers');
 			$.each(csv[0], function(header, value) {
 				var match, h = { name: header, '@index': index };
 				if (header !== '#') {
@@ -123,6 +125,7 @@
 			});
 
 			// process the remaining rows
+			linkedCSV.progress(base, 'parsing rows');
 			$.each(csv, function(index, row) {
 				var
 					id = row['$id'] ? $.uri(row['$id'], base) : null,
@@ -256,7 +259,11 @@
 									map.see[value] = $.linkedCSV({
 										url: val,
 										base: val,
-										failure: function () { return true; }
+										failure: function () { 
+											linkedCSV.progress(val, 'error');
+											return true; 
+										},
+										progress: linkedCSV.progress
 									});
 								}
 							}
@@ -342,6 +349,7 @@
 			});
 
 			// create the array of properties from the propertyIndex
+			linkedCSV.progress(base, 'processing properties');
 			$.each(propertyIndex, function(id, prop) {
 				var names = $.map(prop, function (p) { return p.name; });
 				properties.push(prop);
@@ -386,6 +394,7 @@
 			linkedCSV.cellMeta = function () {
 				return cellMeta;
 			};
+			linkedCSV.progress(base, 'complete');
 			return linkedCSV;
 		};
 
@@ -405,6 +414,8 @@
 				failure = options.failure,
 				linkedCSV = this;
 
+			linkedCSV.progress = options.progress || function () { };
+			linkedCSV.progress(url, 'loading');
 			if (data === undefined) {
 				// get the data from the url provided
 				if (url === undefined) {
