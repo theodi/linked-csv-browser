@@ -413,6 +413,7 @@ $(document).ready(function() {
 				    	$table.find('tbody').html('');
 				    	addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
 			    	}
+						$('i.annotation').popover({ title: 'Notes', html: true, trigger: 'hover' });
 			    };
 					$('td.metadata i, i.annotation').popover({ title: 'Notes', html: true, trigger: 'hover' });
 			  },
