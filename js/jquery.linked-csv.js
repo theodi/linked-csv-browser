@@ -182,7 +182,7 @@
 						} else {
 							entity[prop] = value;
 						}
-					} else if (prop in entity && lang in entity[prop]) {
+					} else if (prop in entity && typeof entity[prop] === 'object' && lang in entity[prop]) {
 						if ($.isArray(entity[prop][lang])) {
 							entity[prop][lang].push(value);
 						} else {

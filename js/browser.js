@@ -39,9 +39,13 @@ $(document).ready(function() {
 	  	return '<a href="' + (value in meta ? meta[value]['@id'] : value) + '">' + headerLabel(value, meta) + '</a>';
 	  },
 
-	  metadataValue = function (value, includeBadge) {
+	  metadataValue = function (value, includeBadge, data) {
 	  	if (value['@id']) {
-	  		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
+	  		if (value['@id'] in data.meta()) {
+	  			return formatMetadata(data.meta()[value['@id']], data);
+	  		} else {
+		  		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
+	  		}
 	  	} else {
 	  		return tableValue(value, includeBadge);
 	  	}
@@ -64,13 +68,13 @@ $(document).ready(function() {
 	    } else if (value['@value']) {
 	      v = value['@value'].replace(/\s+/, '&nbsp;');
 	      if (includeBadge) {
-	        v += '&nbsp;<span class="badge">' + value['@lang'] + '</span>';
+	        v += '&nbsp;<span class="badge">' + (value['@lang'] || /^http:/.test(value['@type']) ? urlRegex.exec(value['@type'])[2] || urlRegex.exec(value['@type'])[3] : value['@type']) + '</span>';
 	      }
 	      return v;
 	    } else if (typeof value === 'object') {
 	    	v = '<ul class="unstyled">';
 	    	for (lang in value) {
-	    		v += '<li><span class="badge">' + lang + '</span> ' + value[lang] + '</li>';
+	    		v += '<li>' + ($.isArray(value[lang]) ? value[lang].join(', ') : value[lang]) + ' <span class="badge">' + lang + '</span></li>';
 	    	}
 	    	v += '</ul>';
 	    	return v;
@@ -81,14 +85,48 @@ $(document).ready(function() {
 
 	  formatMetadata = function(metadata, data) {
 	  	var formatted = '';
-	  	formatted += '<dl>';
-	  	for (prop in metadata) {
-	  		if (prop !== '@id') {
-		  		formatted += '<dt>' + headerValue(prop, data.meta()) + '</dt>';
-		  		formatted += '<dd>' + metadataValue(metadata[prop], true) + '</dd>';
+	  	formatted += '<p class="pull-right">' + tableValue(metadata, false) + '</p>';
+	  	if ('schema:streetAddress' in metadata) {
+	  		formatted += '<address>';
+	  		if ('schema:contactType' in metadata) {
+		  		formatted += '<strong>' + metadata['schema:contactType'] + ':</strong><br />';
 	  		}
+	  		if ('schema:postOfficeBoxNumber' in metadata) {
+		  		formatted += metadata['schema:postOfficeBoxNumber'] + '<br />';
+	  		}
+	  		formatted += metadata['schema:streetAddress'] + '<br />';
+	  		if ('schema:addressLocality' in metadata) {
+		  		formatted += metadata['schema:addressLocality'] + '<br />';
+	  		}
+	  		if ('schema:addressRegion' in metadata) {
+		  		formatted += metadata['schema:addressRegion'] + '<br />';
+	  		}
+	  		if ('schema:postalCode' in metadata) {
+		  		formatted += metadata['schema:postalCode'] + '<br />';
+	  		}
+	  		if ('schema:addressCountry' in metadata) {
+		  		formatted += metadata['schema:addressCountry'] + '<br />';
+	  		}
+	  		if ('schema:email' in metadata) {
+		  		formatted += '<strong>Email:</strong> ' + metadata['schema:email'] + '<br />';
+	  		}
+	  		if ('schema:telephone' in metadata) {
+		  		formatted += '<strong>Tel:</strong> ' + metadata['schema:telephone'] + '<br />';
+	  		}
+	  		if ('schema:faxNumber' in metadata) {
+		  		formatted += '<strong>Fax:</strong> ' + metadata['schema:faxNumber'] + '<br />';
+	  		}
+	  		formatted += '</address>';
+	  	} else {
+		  	formatted += '<dl>';
+		  	for (prop in metadata) {
+		  		if (prop !== '@id') {
+			  		formatted += '<dt>' + headerValue(prop, data.meta()) + '</dt>';
+			  		formatted += '<dd>' + metadataValue(metadata[prop], true, data) + '</dd>';
+		  		}
+		  	}
+		  	formatted += '</dl>';
 	  	}
-	  	formatted += '</dl>';
 	  	return formatted;
 	  },
 
@@ -325,7 +363,9 @@ $(document).ready(function() {
   									'<h4>Headers</h4>' +
 			  						'<ol class="unstyled">' +
 			  							data.headers().map(function (index) {
-			  								return '<li><code>' + this.name + '</code>' + ((this.lang || this.type) ? (' <span class="badge">' + (this.lang || this.type) + '</span>') : '') + '</li>';
+			  								if (this.name !== '') {
+				  								return '<li><code>' + this.name + '</code>' + ((this.lang || this.type) ? (' <span class="badge">' + (this.lang || this.type) + '</span>') : '') + '</li>';
+			  								}
 			  							}).get().join('') +
 			  						'</ol>' +
 			  					'</div>' +
