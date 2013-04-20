@@ -1,4 +1,4 @@
-﻿#lang=en,$id,airpol,geo,time,tsdcc100
+﻿#,$id,airpol,geo,time,tsdcc100
 url,,http://epp.eurostat.ec.europa.eu/def/tsdcc100#airpol,http://epp.eurostat.ec.europa.eu/def/tsdcc100#geo,http://epp.eurostat.ec.europa.eu/def/tsdcc100#time,http://epp.eurostat.ec.europa.eu/def/tsdcc100#tsdcc100
 type,,url,url,time,
 see,,airpol.csv,geo.csv,,

@@ -1,4 +1,4 @@
-﻿#lang=en,$id,unit,geo,time,t2020_50
+﻿#,$id,unit,geo,time,t2020_50
 url,,http://epp.eurostat.ec.europa.eu/def/t2020_50#unit,http://epp.eurostat.ec.europa.eu/def/t2020_50#geo,http://epp.eurostat.ec.europa.eu/def/t2020_50#time,http://epp.eurostat.ec.europa.eu/def/t2020_50#t2020_50
 type,,url,url,time,
 see,,unit.csv,geo.csv,,

@@ -1,4 +1,4 @@
-﻿#lang=en,$id,indic_is,geo,time,tin00075
+﻿#,$id,indic_is,geo,time,tin00075
 url,,http://epp.eurostat.ec.europa.eu/def/tin00075#indic_is,http://epp.eurostat.ec.europa.eu/def/tin00075#geo,http://epp.eurostat.ec.europa.eu/def/tin00075#time,http://epp.eurostat.ec.europa.eu/def/tin00075#tin00075
 type,,url,url,time,
 see,,indic_is.csv,geo.csv,,
