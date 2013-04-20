@@ -158,7 +158,7 @@
 						} else if (triple.length === 4) {
 							label = triple[0];
 							value = triple[1];
-							type = parseProp(triple[2], true);
+							type = triple[2];
 							prop = triple[3] ? parseProp(triple[3]) : undefined;
 						} else {
 							value = triple[1];
@@ -196,7 +196,7 @@
 					}
 					if (prop && !(prop in metadata)) {
 						metadata[prop] = {
-							'@id': prop,
+							'@id': parseProp(prop, true),
 							'rdfs:label': label
 						}
 					}

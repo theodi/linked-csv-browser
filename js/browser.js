@@ -3,6 +3,21 @@ $(document).ready(function() {
 		urlRegex = /(#(.+)|\/([^\/#]+))$/,
 		fragidRegex = /^#row=(\d+)(-(\d+))?$/,
 
+		extractMetadata = function (metadata, fields) {
+			var value;
+			for (i in fields) {
+				if (fields[i] in metadata) {
+					value = metadata[fields[i]];
+					delete metadata[fields[i]];
+					return value;
+				}
+			}
+		},
+
+		escapeHtml = function (html) {
+			return html.replace(/&/g, '&amp;').replace(/\</g, '&lt;').replace(/"/g, '&quot;');
+		},
+
 	  linkCell = function (id) {
 	    return id ? $('<td><a href="' + id + '"><i class="icon-share"></i></a></td>') : null;
 	  },
@@ -21,7 +36,15 @@ $(document).ready(function() {
 	  },
 
 	  headerValue = function (value, meta) {
-	  	return '<a href="' + value + '">' + headerLabel(value, meta) + '</a>';
+	  	return '<a href="' + (value in meta ? meta[value]['@id'] : value) + '">' + headerLabel(value, meta) + '</a>';
+	  },
+
+	  metadataValue = function (value, includeBadge) {
+	  	if (value['@id']) {
+	  		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
+	  	} else {
+	  		return tableValue(value, includeBadge);
+	  	}
 	  },
 
 	  tableValue = function (value, includeBadge) {
@@ -62,11 +85,11 @@ $(document).ready(function() {
 	  	for (prop in metadata) {
 	  		if (prop !== '@id') {
 		  		formatted += '<dt>' + headerValue(prop, data.meta()) + '</dt>';
-		  		formatted += '<dd>' + tableValue(metadata[prop], true) + '</dd>';
+		  		formatted += '<dd>' + metadataValue(metadata[prop], true) + '</dd>';
 	  		}
 	  	}
 	  	formatted += '</dl>';
-	  	return formatted.replace(/&/g, '&amp;').replace(/\</g, '&lt;').replace(/"/g, '&quot;');
+	  	return formatted;
 	  },
 
 	  addRows = function($table, data, start, end) {
@@ -80,7 +103,7 @@ $(document).ready(function() {
 	    rows.slice(start, end).each(function (index) {
 	      var 
 	        idCell = linkCell(this['$id']) || (data.headers('$id') ? '<td>&nbsp;</td>' : ''),
-	        metadataCell = rowMeta.length > 0 ? '<td' + (rowMeta[this['@index']] ? ' class="metadata"><i class="icon icon-pencil" data-content="' + formatMetadata(rowMeta[this['@index']], data) + '" data-placement="right"></i>' : '>&nbsp;') + '</td>' : '',
+	        metadataCell = rowMeta.length > 0 ? '<td' + (rowMeta[this['@index']] ? ' class="metadata"><i class="icon icon-pencil" data-content="' + escapeHtml(formatMetadata(rowMeta[this['@index']], data)) + '" data-placement="right"></i>' : '>&nbsp;') + '</td>' : '',
 	        $row = $('<tr></tr>').append(metadataCell).append(idCell).appendTo($body);
 	      addCells($row, this, data);
 	    });
@@ -116,7 +139,7 @@ $(document).ready(function() {
 	      	ref;
 	      if (this['@id']) {
 	        value = row[this.name] || value;
-	        metadata = metadata ? '<i class="pull-right annotation icon icon-pencil" data-content="' + formatMetadata(metadata, data) + '" data-placement="left"></i>' : '';
+	        metadata = metadata ? '<i class="pull-right annotation icon icon-pencil" data-content="' + escapeHtml(formatMetadata(metadata, data)) + '" data-placement="left"></i>' : '';
 	        $row.append('<td>' + metadata + tableValue(value) + '</td>');
 	        if (this.see) {
 	          $.each(this.see, function (filename, data) {
@@ -206,7 +229,7 @@ $(document).ready(function() {
             $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
           }
           if (metadata) {
-          	$metadataHeaderRow.append('<td class="metadata"><i class="pull-right icon icon-pencil" data-content="' + formatMetadata(metadata, data) + '" data-placement="' + (this['@index'] === 0 ? 'right' : 'left') + '"></i></td>');
+          	$metadataHeaderRow.append('<td class="metadata"><i class="pull-right icon icon-pencil" data-content="' + escapeHtml(formatMetadata(metadata, data)) + '" data-placement="' + (this['@index'] === 0 ? 'right' : 'left') + '"></i></td>');
           } else {
           	$metadataHeaderRow.append('<td>&nbsp;</td>');
           }
@@ -244,7 +267,7 @@ $(document).ready(function() {
 	      }
 	      if (details.length === 1) {
 		      $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
-		      $metadataHeaderRow.append('<td class="metadata">' + (metadata[details[0]['@index']] ? '<i class="icon icon-pencil" data-content="' + formatMetadata(metadata[details[0]['@index']], data) + '" data-placement="bottom"></i>' : '&nbsp;') + '</td>');
+		      $metadataHeaderRow.append('<td class="metadata">' + (metadata[details[0]['@index']] ? '<i class="icon icon-pencil" data-content="' + escapeHtml(formatMetadata(metadata[details[0]['@index']], data)) + '" data-placement="bottom"></i>' : '&nbsp;') + '</td>');
 	        if (details[0].see) {
 	          $.each(details[0].see, function (filename, data) {
 	            addPropertyHeaders($table, filename, data);
@@ -254,7 +277,7 @@ $(document).ready(function() {
 		      $propertyHeaderRow.append('<th colspan="' + details.length + '">' + label + '</th>');
 		      $.each(details, function(index, property) {
 	            $annotationHeaderRow.append('<th><span class="badge">' + (property.lang || property.type) + '</span></th>');
-				      $metadataHeaderRow.append('<td>' + (metadata[property['@index']] ? '<i class="icon icon-pencil" data-content="' + formatMetadata(metadata[property['@index']], data) + '" data-placement="bottom"></i>' : '&nbsp;') + '</td>');
+				      $metadataHeaderRow.append('<td>' + (metadata[property['@index']] ? '<i class="icon icon-pencil" data-content="' + escapeHtml(formatMetadata(metadata[property['@index']], data)) + '" data-placement="bottom"></i>' : '&nbsp;') + '</td>');
 			        if (property.see) {
 			          $.each(property.see, function (filename, data) {
 			            addPropertyHeaders($table, filename, data);
@@ -271,9 +294,9 @@ $(document).ready(function() {
 	  		$tabs = $metadata.find('ul.nav-tabs'),
 	  		$content = $metadata.find('div.tab-content'),
 	  		i = $tabs.find('li').length,
-	  		metadata = data.meta()[data.baseUri()] || {},
-	  		title = metadata['dct:title'] || metadata['dc:title'] || metadata['rdfs:label'],
-	  		desc = metadata['dct:description'] || metadata['dc:description'] || metadata['rdfs:comment'];
+	  		metadata = $.extend({}, data.meta()[data.baseUri()] || {}),
+	  		title = extractMetadata(metadata, ['dct:title', 'dc:title', 'rdfs:label']),
+	  		desc = extractMetadata(metadata, ['dct:description', 'dc:description', 'rdfs:comment']);
 	  	title = typeof title === 'object' ? title['en'] : title;
 	  	desc = typeof desc === 'object' ? desc['en'] : desc;
 	  	$tabs.append('<li' + (i === 0 ? ' class="active"' : '') + '><a href="#file' + i + '" data-toggle="tab">' + filename + '</a></li>');
@@ -284,6 +307,7 @@ $(document).ready(function() {
 			  				'<h2>' + (title ? title + ' <small>' + filename + '</small>' : filename) + '</h2>' +
 			  			'</div>' +
 	  					(desc ? '<p>' + desc + '</p>' : '') +
+	  					formatMetadata(metadata, data) +
 	  				'</div>' +
 	  				'<div class="span6">' +
 	  					'<div class="well">' +

@@ -223,6 +223,7 @@ test("linked CSV with metadata", function() {
 "url,,,#name,#name,\r\n" +
 "meta,#country,label,Country,en,rdfs:label\r\n" +
 "meta,#name,label,Name,en,rdfs:label\r\n" +
+"meta,,source,source.xml,url,dc:source\r\n" +
 "meta,#col=5,note,dummy column,en,rdfs:comment\r\n" +
 ",http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre,\r\n" +
 ",http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,,\r\n" +
@@ -248,7 +249,7 @@ test("linked CSV with metadata", function() {
 					}
 				},
 				"rdfs:label": {
-					"@id": "rdfs:label",
+					"@id": "http://www.w3.org/2000/01/rdf-schema#label",
 					"rdfs:label": "label"
 				},
 				"http://example.org/data/countries#col=5": {
@@ -270,9 +271,19 @@ test("linked CSV with metadata", function() {
 					}
 				},
 				"rdfs:comment": {
-					"@id": "rdfs:comment",
+					"@id": "http://www.w3.org/2000/01/rdf-schema#comment",
 					"rdfs:label": "note"
-				}
+				},
+				"http://example.org/data/countries": {
+					"@id": "http://example.org/data/countries",
+					"dc:source": {
+						"@id": "http://example.org/data/source.xml"
+					}
+				},
+				"dc:source": {
+					"@id": "http://purl.org/dc/terms/source",
+					"rdfs:label": "source"
+				}				
 			}, "the metadata should pick up the labels of the properties from the metadata");
 			deepEqual(data.colMeta()[5], {
 				"@id": "http://example.org/data/countries#col=5",
