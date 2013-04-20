@@ -307,6 +307,85 @@ test("linked CSV with metadata", function() {
 	});
 });
 
+test("linked CSV with metadata", function() {
+	$.linkedCSV({
+		data: "#lang=en,$id,country,english name,french name,\r\n" +
+"lang,,,en,fr,\r\n" +
+"url,,,#name,#name,\r\n" +
+"meta,#country,label,Country,en,rdfs:label\r\n" +
+"meta,#name,label,Name,en,rdfs:label\r\n" +
+"meta,,source,source.xml,url,dc:source\r\n" +
+"meta,#col=5,note,dummy column,en,rdfs:comment\r\n" +
+",http://en.wikipedia.org/wiki/Andorra,AD,Andorra,Andorre,\r\n" +
+",http://en.wikipedia.org/wiki/Andorra,,Principality of Andorra,,\r\n" +
+",http://en.wikipedia.org/wiki/Afghanistan,AF,Afghanistan,Afghanistan,\r\n" +
+",http://en.wikipedia.org/wiki/Afghanistan,,Islamic Republic of Afghanistan,,\r\n" +
+"meta,#row=6,note,first data row,en,rdfs:comment\r\n" +
+"meta,\"#cell=6,1\",note,first data cell,en,rdfs:comment",
+		base: 'http://example.org/data/countries',
+		success: function (data) {
+			ok(data, "we get some data from the CSV");
+			equal(data.rows().length, 4, "there should be four rows");
+			deepEqual(data.meta(), {
+				"http://example.org/data/countries#country": {
+					"@id": "http://example.org/data/countries#country",
+					"rdfs:label": {
+						"en": "Country"
+					}
+				},
+				"http://example.org/data/countries#name": {
+					"@id": "http://example.org/data/countries#name",
+					"rdfs:label": {
+						"en": "Name"
+					}
+				},
+				"rdfs:label": {
+					"@id": "http://www.w3.org/2000/01/rdf-schema#label",
+					"rdfs:label": {
+						"en": "label"
+					}
+				},
+				"http://example.org/data/countries#col=5": {
+					"@id": "http://example.org/data/countries#col=5",
+					"rdfs:comment": {
+						"en": "dummy column"
+					}
+				},
+				"http://example.org/data/countries#row=6": {
+					"@id": "http://example.org/data/countries#row=6",
+					"rdfs:comment": {
+						"en": "first data row"
+					}
+				},
+				"http://example.org/data/countries#cell=6,1": {
+					"@id": "http://example.org/data/countries#cell=6,1",
+					"rdfs:comment": {
+						"en": "first data cell"
+					}
+				},
+				"rdfs:comment": {
+					"@id": "http://www.w3.org/2000/01/rdf-schema#comment",
+					"rdfs:label": {
+						"en": "note"
+					}
+				},
+				"http://example.org/data/countries": {
+					"@id": "http://example.org/data/countries",
+					"dc:source": {
+						"@id": "http://example.org/data/source.xml"
+					}
+				},
+				"dc:source": {
+					"@id": "http://purl.org/dc/terms/source",
+					"rdfs:label": {
+						"en": "source"
+					}
+				}				
+			}, "the metadata should pick up the labels of the properties from the metadata and indicate they're english");
+		}
+	});
+});
+
 asyncTest("linked documents", function() {
 	var data = $.linkedCSV({
 		url: 'test2.csv', 
