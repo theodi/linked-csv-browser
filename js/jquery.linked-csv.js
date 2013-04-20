@@ -3,7 +3,6 @@
 		langHeaderRegex = /^(.+)+@(.+)$/,
 		datatypeHeaderRegex = /^(.+)\^\^(.+)$/,
 		urlHeaderRegex = /^\$(.+)/,
-		metaHeaderRegex = /^#(lang=([-a-zA-Z]{2,}))?$/,
 		namespaces = {
 			'rel': "http://www.iana.org/assignments/relation/", // IANA Link Relations
 			'schema': "http://schema.org/", // schema.org
@@ -38,8 +37,6 @@
 				rowMeta = [],
 				colMeta = [],
 				cellMeta = [],
-				metaHeader = '#',
-				defaultLang,
 				parseProp = function(prop, expand) {
 					var match;
 					if (prefixRegex.test(prop)) {
@@ -111,13 +108,7 @@
 			linkedCSV.progress(base, 'parsing headers');
 			$.each(csv[0], function(header, value) {
 				var match, h = { name: header, '@index': index };
-				if (metaHeaderRegex.test(header)) {
-					match = metaHeaderRegex.exec(header);
-					if (match[2] !== '') {
-						defaultLang = match[2];
-					}
-					metaHeader = header;
-				} else {
+				if (header !== '#') {
 					if (header !== '$id' && header !== '') {
 						h['@id'] = $.uri.resolve('#' + encodeURIComponent(header), base).toString()
 						if (h['@id'] in propertyIndex) {
@@ -140,7 +131,7 @@
 					id = row['$id'] ? $.uri(row['$id'], base) : null,
 					entity = id === null ? {} : {'@id': id.toString()},
 					r = id === null ? { '@index': index } : {'$id': id.toString(), '@index': index},
-					meta = row[metaHeader],
+					meta = row['#'],
 					triple = [],
 					label, type, lang, value, prop, fragment;
 				if (meta === 'meta') {
@@ -149,7 +140,7 @@
 					entity['@id'] = id.toString();
 					fragment = parseFragment(entity['@id']);
 					$.each(row, function(header, value) {
-						if (header !== metaHeader && header !== '$id') {
+						if (header !== '#' && header !== '$id') {
 							triple.push(value);
 						}
 					});
@@ -209,12 +200,7 @@
 					if (prop && !(prop in metadata)) {
 						metadata[prop] = {
 							'@id': parseProp(prop, true),
-							'rdfs:label': {}
-						}
-						if (defaultLang) {
-							metadata[prop]['rdfs:label'][defaultLang] = label;
-						} else {
-							metadata[prop]['rdfs:label'] = label;
+							'rdfs:label': label
 						}
 					}
 					if (fragment) {
@@ -237,7 +223,7 @@
 							propertyArray = [],
 							prop = map !== undefined ? map['@id'] : undefined;
 						if (meta === 'url') {
-							if (header !== metaHeader && value !== '') {
+							if (header !== '#' && value !== '') {
 								val = parseProp(value, base);
 								if (val !== prop) {
 									map['@id'] = val;
@@ -261,11 +247,11 @@
 								}
 							}
 						} else if (meta === 'type' || meta === 'lang') {
-							if (header !== metaHeader && value !== '') {
+							if (header !== '#' && value !== '') {
 								map[meta] = value;
 							}
 						} else if (meta === 'see') {
-							if (header !== metaHeader && value !== '') {
+							if (header !== '#' && value !== '') {
 								val = $.uri.resolve(value, base).toString();
 								if (map.see === undefined) map.see = {};
 								if (map.see[value] === undefined) {
@@ -281,7 +267,7 @@
 									});
 								}
 							}
-						} else if (header !== '$id' && header !== metaHeader) {
+						} else if (header !== '$id' && header !== '#') {
 							val = parseValue(value, map.type, map.lang);
 							if (val !== '') {
 								r[header] = val;
@@ -315,7 +301,7 @@
 						}
 					});
 				}
-				if (row[metaHeader] && row[metaHeader] !== '') {
+				if (row['#'] && row['#'] !== '') {
 					// row doesn't contain any entities
 				} else {
 					if (id === null || entityIndex[id] === undefined) {
