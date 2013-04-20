@@ -102,7 +102,7 @@ $(document).ready(function() {
 	    	rowMeta = data.rowMeta();
 	    rows.slice(start, end).each(function (index) {
 	      var 
-	        idCell = linkCell(this['$id']) || (data.headers('$id') ? '<td>&nbsp;</td>' : ''),
+	        idCell = linkCell(this['$id']) || (data.header('$id') ? '<td>&nbsp;</td>' : ''),
 	        metadataCell = rowMeta.length > 0 ? '<td' + (rowMeta[this['@index']] ? ' class="metadata"><i class="icon icon-pencil" data-content="' + escapeHtml(formatMetadata(rowMeta[this['@index']], data)) + '" data-placement="right"></i>' : '>&nbsp;') + '</td>' : '',
 	        $row = $('<tr></tr>').append(metadataCell).append(idCell).appendTo($body);
 	      addCells($row, this, data);
