@@ -108,11 +108,16 @@ $(document).ready(function() {
 	  },
 
 	  addCells = function($row, row, data) {
+	  	var metaForRow = data.cellMeta()[row['@index']];
 	    data.headers().each(function (index) {
-	      var value = '&nbsp;', ref;
+	      var 
+	      	metadata = metaForRow ? metaForRow[this['@index']] : null,
+	      	value = '&nbsp;', 
+	      	ref;
 	      if (this['@id']) {
 	        value = row[this.name] || value;
-	        $row.append('<td>' + tableValue(value) + '</td>');
+	        metadata = metadata ? '<i class="pull-right annotation icon icon-pencil" data-content="' + formatMetadata(metadata, data) + '" data-placement="left"></i>' : '';
+	        $row.append('<td>' + metadata + tableValue(value) + '</td>');
 	        if (this.see) {
 	          $.each(this.see, function (filename, data) {
 	            var entity = data.entity(value['@id']);
@@ -201,7 +206,7 @@ $(document).ready(function() {
             $propertyHeaderRow.append('<th rowspan="2">' + label + '</th>');
           }
           if (metadata) {
-          	$metadataHeaderRow.append('<td class="metadata"><i class="icon icon-pencil" data-content="' + formatMetadata(metadata, data) + '" data-placement="bottom"></i></td>');
+          	$metadataHeaderRow.append('<td class="metadata"><i class="pull-right icon icon-pencil" data-content="' + formatMetadata(metadata, data) + '" data-placement="' + (this['@index'] === 0 ? 'right' : 'left') + '"></i></td>');
           } else {
           	$metadataHeaderRow.append('<td>&nbsp;</td>');
           }
@@ -383,7 +388,7 @@ $(document).ready(function() {
 				    	addRows($table, data, parseInt(match[1]), parseInt(match[3] !== '' ? match[3] : match[1]));
 			    	}
 			    };
-					$('td.metadata i').popover({ title: 'Notes', html: true });
+					$('td.metadata i, i.annotation').popover({ title: 'Notes', html: true, trigger: 'hover' });
 			  }
 			});
 
