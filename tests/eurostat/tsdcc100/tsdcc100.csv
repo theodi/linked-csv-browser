@@ -1,7 +1,22 @@
-﻿#,$id,Air pollution indicator,Geopolitical entity (declaring),"Period of time (a=annual, q=quarterly, m=monthly, d=daily, c=cumulated from January)",Greenhouse gas emissions
-prop,,http://epp.eurostat.ec.europa.eu/def/tsdcc100#airpol,http://epp.eurostat.ec.europa.eu/def/tsdcc100#geo,http://epp.eurostat.ec.europa.eu/def/tsdcc100#time,http://epp.eurostat.ec.europa.eu/def/tsdcc100#tsdcc100
+﻿#lang=en,$id,airpol,geo,time,tsdcc100
+url,,http://epp.eurostat.ec.europa.eu/def/tsdcc100#airpol,http://epp.eurostat.ec.europa.eu/def/tsdcc100#geo,http://epp.eurostat.ec.europa.eu/def/tsdcc100#time,http://epp.eurostat.ec.europa.eu/def/tsdcc100#tsdcc100
 type,,url,url,time,
 see,,airpol.csv,geo.csv,,
+meta,,title (en),Greenhouse gas emissions,en,dc:title
+meta,,title (fr),Émissions de gaz à effet de serre,fr,dc:title
+meta,,title (de),Treibhausgasemissionen,de,dc:title
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#airpol,label (en),Air pollution indicator,en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#airpol,label (fr),Indicateur de la pollution atmosphérique,fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#airpol,label (de),Indikator für Luftverschmutzung,de,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#geo,label (en),Geopolitical entity (declaring),en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#geo,label (fr),Entité géopolitique (déclarante),fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#geo,label (de),Geopolitische Meldeeinheit,de,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#time,label (en),"Period of time (a=annual, q=quarterly, m=monthly, d=daily, c=cumulated from January)",en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#time,label (fr),"Période (a=année, s=semestriel, q=trimestre, m=mois, d=jour, c=cumulé à partir de janvier)",fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#time,label (de),"Zeitraum (a=Jahr, s=halbjährlich, q=Vierteljahr, m=Monat, d=Tag, c=kumuliert ab Januar)",de,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#tsdcc100,label (en,Greenhouse gas emissions,en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#tsdcc100,label (fr,Émissions de gaz à effet de serre,fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tsdcc100#tsdcc100,label (de,Treibhausgasemissionen,de,rdfs:label
 meta,,source,http://epp.eurostat.ec.europa.eu/cache/ITY_FIXDST/tsdcc100.xml,url,dc:source
 meta,#col=5,footnote,: = not available,en,rdfs:comment
 meta,#col=5,footnote,: = non disponible,fr,rdfs:comment

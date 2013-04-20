@@ -1,7 +1,22 @@
-﻿#,$id,Information society indicator,Geopolitical entity (declaring),"Period of time (a=annual, q=quarterly, m=monthly, d=daily, c=cumulated from January)","Individuals using the Internet, by place of use"
-prop,,http://epp.eurostat.ec.europa.eu/def/tin00075#indic_is,http://epp.eurostat.ec.europa.eu/def/tin00075#geo,http://epp.eurostat.ec.europa.eu/def/tin00075#time,http://epp.eurostat.ec.europa.eu/def/tin00075#tin00075
+﻿#lang=en,$id,indic_is,geo,time,tin00075
+url,,http://epp.eurostat.ec.europa.eu/def/tin00075#indic_is,http://epp.eurostat.ec.europa.eu/def/tin00075#geo,http://epp.eurostat.ec.europa.eu/def/tin00075#time,http://epp.eurostat.ec.europa.eu/def/tin00075#tin00075
 type,,url,url,time,
 see,,indic_is.csv,geo.csv,,
+meta,,title (en),"Individuals using the Internet, by place of use",en,dc:title
+meta,,title (fr),"Particuliers utilisant Internet, par place d'utilisation",fr,dc:title
+meta,,title (de),"Einzelpersonen, die das Internet nutzen, nach Ort der Nutzung",de,dc:title
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#indic_is,label (en),Information society indicator,en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#indic_is,label (fr),Indicateur sur la société de l'information,fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#indic_is,label (de),Indikator zur Informationsgesellschaft,de,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#geo,label (en),Geopolitical entity (declaring),en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#geo,label (fr),Entité géopolitique (déclarante),fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#geo,label (de),Geopolitische Meldeeinheit,de,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#time,label (en),"Period of time (a=annual, q=quarterly, m=monthly, d=daily, c=cumulated from January)",en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#time,label (fr),"Période (a=année, s=semestriel, q=trimestre, m=mois, d=jour, c=cumulé à partir de janvier)",fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#time,label (de),"Zeitraum (a=Jahr, s=halbjährlich, q=Vierteljahr, m=Monat, d=Tag, c=kumuliert ab Januar)",de,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#tin00075,label (en,"Individuals using the Internet, by place of use",en,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#tin00075,label (fr,"Particuliers utilisant Internet, par place d'utilisation",fr,rdfs:label
+meta,http://epp.eurostat.ec.europa.eu/def/tin00075#tin00075,label (de,"Einzelpersonen, die das Internet nutzen, nach Ort der Nutzung",de,rdfs:label
 meta,,source,http://epp.eurostat.ec.europa.eu/cache/ITY_FIXDST/tin00075.xml,url,dc:source
 meta,#col=5,footnote,: = not available,en,rdfs:comment
 meta,#col=5,footnote,: = non disponible,fr,rdfs:comment
@@ -1446,9 +1461,9 @@ meta,#col=5,footnote,: = nicht verfügbar,de,rdfs:comment
 ,,http://epp.eurostat.ec.europa.eu/def/indic_is#I_IOTH,http://epp.eurostat.ec.europa.eu/def/geo#TR,2009,9
 ,,http://epp.eurostat.ec.europa.eu/def/indic_is#I_IOTH,http://epp.eurostat.ec.europa.eu/def/geo#TR,2010,8
 ,,http://epp.eurostat.ec.europa.eu/def/indic_is#I_IOTH,http://epp.eurostat.ec.europa.eu/def/geo#TR,2011,:
-meta,"#cell=990,5",flag,unreliable,en,rdfs:comment
-meta,"#cell=990,5",flag,non fiable,fr,rdfs:comment
-meta,"#cell=990,5",flag,unzuverlässig,de,rdfs:comment
-meta,"#cell=1429,5",flag,unreliable,en,rdfs:comment
-meta,"#cell=1429,5",flag,non fiable,fr,rdfs:comment
-meta,"#cell=1429,5",flag,unzuverlässig,de,rdfs:comment
+meta,"#cell=1005,5",flag,unreliable,en,rdfs:comment
+meta,"#cell=1005,5",flag,non fiable,fr,rdfs:comment
+meta,"#cell=1005,5",flag,unzuverlässig,de,rdfs:comment
+meta,"#cell=1444,5",flag,unreliable,en,rdfs:comment
+meta,"#cell=1444,5",flag,non fiable,fr,rdfs:comment
+meta,"#cell=1444,5",flag,unzuverlässig,de,rdfs:comment
