@@ -382,6 +382,7 @@ $(document).ready(function() {
 			    	$filenameRow = $table.find('tr.filename'),
 			    	$propertyRow = $table.find('tr.property'),
 			    	match = [];
+			    $('#status .alert-error').hide();
 			    if (data.header('$id')) {
 			    	$filenameRow.append('<th colspan="' + (rowMeta.length > 0 ? '2' : '1') + '"><span class="filename">' + filename + '</span> <a class="pull-right" href="' + url + '"><i class="icon icon-download-alt"></i></a></th>');
 			    	$propertyRow.append('<th rowspan="' + (colMeta.length > 0 ? '3' : '2') + '"' + (rowMeta.length > 0 ? ' colspan="2"' : '') + '></th>');
@@ -413,6 +414,9 @@ $(document).ready(function() {
 			    	}
 			    };
 					$('td.metadata i, i.annotation').popover({ title: 'Notes', html: true, trigger: 'hover' });
+			  },
+			  failure: function (error) {
+			  	$('#load-error').show();
 			  }
 			});
 

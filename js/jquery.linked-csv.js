@@ -255,7 +255,8 @@
 									// not supplying a success function ensures this is synchronous
 									map.see[value] = $.linkedCSV({
 										url: val,
-										base: val
+										base: val,
+										failure: function () { return true; }
 									});
 								}
 							}
@@ -401,6 +402,7 @@
 				base = options.base || $.uri.base(),
 				data = options.data,
 				success = options.success,
+				failure = options.failure,
 				linkedCSV = this;
 
 			if (data === undefined) {
@@ -416,12 +418,24 @@
 							async: false
 						}).done(function (data) {
 							init(linkedCSV, data, url);
+						}).fail(function (error) {
+							if (failure) {
+								failure(error);
+							} else {
+								throw "Unable to load " + url.toString() + " probably due to cross-site scripting constraints.";
+							}
 						});
 					} else {
 						$.get(url, function(data) {
 							init(linkedCSV, data, url);
 							success(linkedCSV);
-						}, 'text');
+						}, 'text').fail(function (error) {
+							if (failure) {
+								failure(error);
+							} else {
+								throw "Unable to load " + url.toString() + " probably due to cross-site scripting constraints.";
+							}
+						});
 					}
 				}
 			} else {
