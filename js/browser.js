@@ -255,7 +255,8 @@ $(document).ready(function() {
             // add a new filename header cell
             $filenameRow.append('<th colspan="1">' +
             		'<span class="filename">' + filename + '</span>' +
-            		' <a class="pull-right" href="' + data.baseUri() + '"><i class="icon icon-download-alt"></i></a>' +
+            		' <a class="pull-right" title="download" href="' + data.baseUri() + '"><i class="icon icon-download-alt"></i></a>' + 
+            		' <a class="pull-right" title="browse" href="?url=' + encodeURIComponent(data.baseUri()) + '#row=0-50"><i class="icon icon-eye-open"></i></a>' +
             	'</th>');
           }
           if (this.lang || this.type) {
@@ -302,7 +303,8 @@ $(document).ready(function() {
 	        // add a new filename header cell
           $filenameRow.append('<th colspan="' + details.length + '">' +
           		'<span class="filename">' + filename + '</span>' +
-          		' <a class="pull-right" href="' + data.baseUri() + '"><i class="icon icon-download-alt"></i></a>' +
+          		' <a class="pull-right" title="download" href="' + data.baseUri() + '"><i class="icon icon-download-alt"></i></a>' +
+          		' <a class="pull-right" title="browse" href="?url=' + encodeURIComponent(data.baseUri()) + '#row=0-50"><i class="icon icon-eye-open"></i></a>' +
           	'</th>');
 	      }
 	      if (details.length === 1) {
