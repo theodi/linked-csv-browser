@@ -341,15 +341,15 @@ $(document).ready(function() {
 	  	desc = typeof desc === 'object' ? desc['en'] : desc;
 	  	$tabs.append('<li' + (i === 0 ? ' class="active"' : '') + '><a href="#file' + i + '" data-toggle="tab">' + filename + '</a></li>');
 	  	$content.append('<div id="file' + i + '" class="tab-pane' + (i === 0 ? ' active' : '') + '">' +
+	  			'<div class="page-header">' +
+	  				'<h2>' + (title ? title + ' <small>' + filename + '</small>' : filename) + '</h2>' +
+	  			'</div>' +
 	  			'<div class="row-fluid">' +
-	  				'<div class="span6">' +
-			  			'<div class="page-header">' +
-			  				'<h2>' + (title ? title + ' <small>' + filename + '</small>' : filename) + '</h2>' +
-			  			'</div>' +
+	  				'<div class="span7">' +
 	  					(desc ? '<p>' + desc + '</p>' : '') +
 	  					formatMetadata(metadata, data) +
 	  				'</div>' +
-	  				'<div class="span6">' +
+	  				'<div class="span5">' +
 	  					'<div class="well">' +
 	  						'<h3>Statistics</h3>' +
   							'<div class="row-fluid">' +
