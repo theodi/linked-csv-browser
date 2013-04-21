@@ -191,7 +191,7 @@ $(document).ready(function() {
 
 	  addPropertyCells = function($row, entity, data) {
 	  	var html = '';
-	  	if ('@html' in entity) {
+	  	if (typeof entity === 'object' && '@html' in entity) {
 				html = entity['@html'];	 
 				$row.append(html);
 	  	} else {
@@ -228,7 +228,9 @@ $(document).ready(function() {
 		        }
 					}
 		    });
-		    entity['@html'] = html;
+				if (typeof entity === 'object') {
+			    entity['@html'] = html;
+				}
 	  	}
 			return html;
 	  },

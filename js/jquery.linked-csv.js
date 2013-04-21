@@ -91,11 +91,18 @@
 					return val;
 				},
 				parseFragment = function(url) {
-					var fragid;
+					var fragid, end;
 					if (url.substring(0,base.toString().length) === base.toString()) {
 						fragid = url.substring(base.toString().length + 1);
 						fragid = fragid.split('=');
-						fragid[1] = fragid[0] === 'cell' ? fragid[1].split(',') : fragid[1];
+						if (/-/.test(fragid[1])) {
+							end = fragid[1].split('-');
+							fragid[1] = fragid[0] === 'cell' ? end[0].split(',') : end[0];
+							end = fragid[0] === 'cell' ? end[1].split(',') : end[1];
+							fragid[2] = end;
+						} else {
+							fragid[1] = fragid[0] === 'cell' ? fragid[1].split(',') : fragid[1];
+						}
 						return fragid;
 					} else {
 						return null;
@@ -205,14 +212,22 @@
 					}
 					if (fragment) {
 						if (fragment[0] === 'row') {
-							rowMeta[parseInt(fragment[1])] = entity;
-						} else if (fragment[0] === 'col') {
-							colMeta[parseInt(fragment[1])] = entity;
-						} else if (fragment[0] === 'cell') {
-							if (cellMeta[parseInt(fragment[1][0])] === undefined) {
-								cellMeta[parseInt(fragment[1][0])] = [];
+							for (var i = parseInt(fragment[1]); i <= parseInt(fragment[2] || fragment[1]); i++) {
+								rowMeta[i] = entity;
 							}
-							cellMeta[parseInt(fragment[1][0])][parseInt(fragment[1][1])] = entity;
+						} else if (fragment[0] === 'col') {
+							for (var i = parseInt(fragment[1]); i <= parseInt(fragment[2] || fragment[1]); i++) {
+								colMeta[i] = entity;
+							}
+						} else if (fragment[0] === 'cell') {
+							for (var i = parseInt(fragment[1][0]); i <= parseInt(fragment[2] ? (fragment[2][0] || fragment[1][0]) : fragment[1][0]); i++) {
+								if (cellMeta[i] === undefined) {
+									cellMeta[i] = [];
+								}
+								for (var j = parseInt(fragment[1][1]); j <= parseInt(fragment[2] ? (fragment[2][1] || fragment[1][1]) : fragment[1][1]); j++) {
+									cellMeta[i][j] = entity;
+								}
+							}
 						}
 					}
 				} else {
