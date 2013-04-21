@@ -12,6 +12,13 @@
       body {
         padding-top: 60px;
       }
+      #browser hr {
+        margin-top: 0;
+      }
+      #browser form > * {
+        margin-bottom: 0;
+        margin-top: 20px;
+      }
       #tables {
         overflow: auto;
       }
@@ -33,7 +40,7 @@
       }
     </style>
   </head>
-  <body>
+  <body id="browser">
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -56,24 +63,22 @@
             <input id="load-url" name="url" class="input-xxlarge" type="url" placeholder="URL of Linked CSV" />
             <button id="load-btn" class="btn" type="submit">Load</button>
           </p>
+          <ul class="nav nav-pills">
+            <li class="active">
+              <a href="#tables" data-toggle="pill">Data</a>
+            </li>
+            <li>
+              <a href="#metadata" data-toggle="pill">Metadata</a>
+            </li>
+          </ul>
         </form>
-        <ul class="span4 nav nav-pills">
-          <li class="active">
-            <a href="#tables" data-toggle="pill">Data</a>
-          </li>
-          <li>
-            <a href="#metadata" data-toggle="pill">Metadata</a>
-          </li>
+        <ul class="span4 nav nav-list">
+          <li class="nav-header">Examples</li>
+          <li><a href="?url=http%3A%2F%2Ftheodi.github.io%2Flinked-csv-browser%2Ftests%2Feurostat%2Ft2020_50%2Ft2020_50.csv#row=0-50">Eurostat</a></li>
+          <li><a href="?url=http%3A%2F%2Ftheodi.github.io%2Flinked-csv-browser%2Ftests%2Feuropean_unemployment1.0%2Fcountry_sex_age.csv#row=0-50">Unemployment</a></li>
+          <li><a href="?url=http%3A%2F%2Ftheodi.github.io%2Flinked-csv-browser%2Ftests%2Fhealth%2F1981203.csv#row=0-50">Deprivation</a></li>
         </ul>
       </div>
-      <p>
-        <strong>Examples:</strong>
-        <a href="?url=http%3A%2F%2Ftheodi.github.io%2Flinked-csv-browser%2Ftests%2Feurostat%2Ft2020_50%2Ft2020_50.csv#row=0-50">Eurostat</a>
-        &middot;
-        <a href="?url=http%3A%2F%2Ftheodi.github.io%2Flinked-csv-browser%2Ftests%2Feuropean_unemployment1.0%2Fcountry_sex_age.csv#row=0-50">Unemployment</a>
-        &middot;
-        <a href="?url=http%3A%2F%2Ftheodi.github.io%2Flinked-csv-browser%2Ftests%2Fhealth%2F1981203.csv#row=0-50">Deprivation</a>
-      </p>
     </div>
     <div class="container-fluid">
       <hr />
