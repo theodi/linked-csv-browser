@@ -1,7 +1,16 @@
 $(document).ready(function() {
 	var
 		urlRegex = /(#(.+)|\/([^\/#]+))$/,
+		uriRegex = /^(([a-z][\-a-z0-9+\.]*):){1}(\/\/([^\/?#]+))?([^?#]*)?(\?([^#]*))?(#(.*))?$/i,
 		fragidRegex = /^#row=(\d+)(-(\d+))?$/,
+
+	    isURI = function (u) {
+	      var m = u.match(uriRegex);
+	      if (m === null) {
+	        return false;
+	      }
+	      return true;
+	    },
 
 		extractMetadata = function (metadata, fields) {
 			var value;
@@ -78,7 +87,10 @@ $(document).ready(function() {
 	    	}
 	    	v += '</ul>';
 	    	return v;
-	    } else {
+	    } else if (isURI(value)) {
+	      return '<a href="' + value + '" target="_blank">' + value + '</a>';
+	    } 
+	      else {
 	      return v.toString().replace(/\s+/, '&nbsp;');
 	    }
 	  },
