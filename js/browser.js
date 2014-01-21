@@ -2,6 +2,7 @@ $(document).ready(function() {
 	var
 		urlRegex = /(#(.+)|\/([^\/#]+))$/,
 		fragidRegex = /^#row=(\d+)(-(\d+))?$/,
+	    showUri = /\?showUri=true/.test(document.location.search) ? true : false,
 
 		extractMetadata = function (metadata, fields) {
 			var value;
@@ -64,7 +65,10 @@ $(document).ready(function() {
 	      v += '</div>';
 	      return v;
 	    } else if (value['@id']) {
-	      return '<a href="' + value['@id'] + '"><i class="icon-share"></i></a>';
+	    	if(showUri)
+	    		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
+	    	else
+	    		return '<a href="' + value['@id'] + '"><i class="icon-share"></i></a>';
 	    } else if (value['@value']) {
 	      v = value['@value'].replace(/\s+/, '&nbsp;');
 	      if (includeBadge) {
