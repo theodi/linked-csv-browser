@@ -2,6 +2,7 @@ $(document).ready(function() {
 	var
 		urlRegex = /(#(.+)|\/([^\/#]+))$/,
 		fragidRegex = /^#row=(\d+)(-(\d+))?$/,
+	    showUri = /\?showUri=true/.test(document.location.search) ? true : false,
 
 		extractMetadata = function (metadata, fields) {
 			var value;
