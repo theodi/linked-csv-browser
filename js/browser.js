@@ -53,6 +53,8 @@ $(document).ready(function() {
 
 	  tableValue = function (value, includeBadge) {
 	    var v = value;
+	    query = document.location.search;
+	    showUri = /\?showUri=true/.test(query) ? true : false;
 	    if ($.isArray(value)) {
 	      v = '<div class="dropdown">';
 	      v += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">' + tableValue(value[0], includeBadge) + '</a>';
@@ -64,7 +66,10 @@ $(document).ready(function() {
 	      v += '</div>';
 	      return v;
 	    } else if (value['@id']) {
-	      return '<a href="' + value['@id'] + '"><i class="icon-share"></i></a>';
+	    	if(showUri)
+	    		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
+	    	else
+	    		return '<a href="' + value['@id'] + '"><i class="icon-share"></i></a>';
 	    } else if (value['@value']) {
 	      v = value['@value'].replace(/\s+/, '&nbsp;');
 	      if (includeBadge) {
