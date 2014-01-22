@@ -410,8 +410,15 @@ $(document).ready(function() {
 	  },
 
 	  query = document.location.search,
-	  url = /^\?url=/.test(query) ? decodeURIComponent(query.substring(5)) : null,
+	  url,
 	  filename;
+	  
+	  if(showUri) {
+	  	var pos = query.indexOf("&showUri");
+	  	url = /^\?url=/.test(query) ? decodeURIComponent(query.substring(5,pos)) : null;
+	  }
+	  else
+	  	url = /^\?url=/.test(query) ? decodeURIComponent(query.substring(5)) : null;
 
   if (url) {
   	filename = urlRegex.exec(url)[3];
