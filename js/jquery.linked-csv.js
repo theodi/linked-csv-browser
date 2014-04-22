@@ -18,6 +18,7 @@
 			'skos-xl': "http://www.w3.org/2008/05/skos-xl#", // SKOS Extensions for Labels			
 		},
 		prefixRegex = new RegExp('^(' + Object.keys(namespaces).join('|') + '):(.+)$'),
+		uriRegex = /^(([a-z][\-a-z0-9+\.]*):){1}(\/\/([^\/?#]+))?([^?#]*)?(\?([^#]*))?(#(.*))?$/i,
 
 		init = function (linkedCSV, data, base) {
 			var
@@ -52,7 +53,7 @@
 				},
 				parseValue = function(value, type, lang) {
 					var val = value;
-					if (type === 'url') {
+					if (type === 'url' || uriRegex.test(value)) {
 						val = {
 							'@id': $.uri.resolve(value, base).toString()
 						};
