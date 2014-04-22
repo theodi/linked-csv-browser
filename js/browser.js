@@ -2,7 +2,7 @@ $(document).ready(function() {
 	var
 		urlRegex = /(#(.+)|\/([^\/#]+))$/,
 		fragidRegex = /^#row=(\d+)(-(\d+))?$/,
-	    showUri = /\&showUri=true/.test(document.location.search) ? true : false,
+	    dontShowUri = /\&showUri=false/.test(document.location.search) ? true : false,
 
 		extractMetadata = function (metadata, fields) {
 			var value;
@@ -65,10 +65,10 @@ $(document).ready(function() {
 	      v += '</div>';
 	      return v;
 	    } else if (value['@id']) {
-	    	if(showUri)
-	    		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
-	    	else
+	    	if(dontShowUri)
 	    		return '<a href="' + value['@id'] + '"><i class="icon-share"></i></a>';
+	    	else
+	    		return '<a href="' + value['@id'] + '">' + value['@id'] + '</a>';
 	    } else if (value['@value']) {
 	      v = value['@value'].replace(/\s+/, '&nbsp;');
 	      if (includeBadge) {
@@ -413,7 +413,7 @@ $(document).ready(function() {
 	  url,
 	  filename;
 	  
-	  if(showUri) {
+	  if(dontShowUri) {
 	  	var pos = query.indexOf("&showUri");
 	  	url = /^\?url=/.test(query) ? decodeURIComponent(query.substring(5,pos)) : null;
 	  }
